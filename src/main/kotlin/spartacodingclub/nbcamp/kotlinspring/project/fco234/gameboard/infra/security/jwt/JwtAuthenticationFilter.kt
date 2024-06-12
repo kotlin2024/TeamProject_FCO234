@@ -32,9 +32,10 @@ class JwtAuthenticationFilter(
                     val userId=it.payload.subject.toLong()
                     val role= it.payload.get("role",String::class.java)
                     val birthday =it.payload.get("birthday",String::class.java)
+                    val email = it.payload.get("email",String::class.java)
 
                     val principal = UserPrincipal(
-                        userId,role,setOf(birthday))
+                        id=userId, birthday = birthday,email=email, roles = setOf(role))
                     val authentication = JwtAuthenticationToken(
                         principal=principal,
                         details = WebAuthenticationDetailsSource().buildDetails(request) // request에서 ip주소와 세션ID를 추출해서 WebAuthenticationDetails 객체를 생성

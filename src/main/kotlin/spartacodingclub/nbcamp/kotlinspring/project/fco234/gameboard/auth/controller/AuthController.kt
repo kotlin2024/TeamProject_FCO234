@@ -1,14 +1,14 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.users.controller
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.controller
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.users.dto.LoginRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.users.dto.SignUpRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.users.dto.UserResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.users.service.imsiSignupService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.LoginRequest
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.SignUpRequest
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.dto.UserResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.service.imsiSignupService
 
 
 @RestController

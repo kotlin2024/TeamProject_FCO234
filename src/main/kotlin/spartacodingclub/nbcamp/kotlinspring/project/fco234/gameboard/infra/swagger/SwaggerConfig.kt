@@ -1,4 +1,4 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.swagger
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.swagger
 
 import io.swagger.v3.oas.models.Components
 import io.swagger.v3.oas.models.OpenAPI
@@ -30,9 +30,9 @@ class SwaggerConfig {
             )
             .info(
                 Info()
-                    .title("팀프로젝트 인증인가 테스트를 위한 API")
-                    .description("Authorization API schema by HJP")
-                    .version("1.0.2")
+                    .title("Game board API")
+                    .description("게임 게시판 API BY FCO234")
+                    .version("1.0.0")
             )
     }
 }
