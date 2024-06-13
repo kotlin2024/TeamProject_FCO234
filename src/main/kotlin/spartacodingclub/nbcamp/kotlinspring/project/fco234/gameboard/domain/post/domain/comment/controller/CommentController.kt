@@ -1,5 +1,5 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.controller
-import io.swagger.v3.oas.annotations.Parameter
+
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -2,7 +2,6 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.Comment
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime

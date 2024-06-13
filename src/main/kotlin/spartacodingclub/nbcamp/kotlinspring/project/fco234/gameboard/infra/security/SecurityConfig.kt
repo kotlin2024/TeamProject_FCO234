@@ -34,7 +34,8 @@ class SecurityConfig(
                     "/v3/api-docs/**",
                     "/api/v1/posts/get/**",//
                     "/api/v1/posts/{postId}/comments/get/**",
-                    "/admin/**"
+                    "/admin/**",
+                    "/verify-email"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
