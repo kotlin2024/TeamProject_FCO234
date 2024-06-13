@@ -9,7 +9,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.toResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotfoundException
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotFoundException
 
 @Service
 class PostServiceImpl(
@@ -25,7 +25,7 @@ class PostServiceImpl(
 
     override fun getPost(id: Long): PostResponse {
 
-        val post =  postRepository.findByIdOrNull(id)?:throw ModelNotfoundException("Post",id)
+        val post =  postRepository.findByIdOrNull(id)?:throw ModelNotFoundException("Post",id)
         return post.toResponse()
 
     }
@@ -39,7 +39,7 @@ class PostServiceImpl(
     }
 
     override fun updatePost(id: Long, updatePostRequest: UpdatePostRequest): PostResponse {
-        val updatePost = postRepository.findByIdOrNull(id = id) ?: throw ModelNotfoundException("Post",id)
+        val updatePost = postRepository.findByIdOrNull(id = id) ?: throw ModelNotFoundException("Post",id)
         val (title, content) = updatePostRequest
 
         updatePost.title = title
@@ -51,7 +51,7 @@ class PostServiceImpl(
 
 
     override fun deletePost(id: Long) {
-        postRepository.findByIdOrNull(id) ?: throw ModelNotfoundException("Post",id)
+        postRepository.findByIdOrNull(id) ?: throw ModelNotFoundException("Post",id)
         postRepository.deleteById(id)
     }
 }
