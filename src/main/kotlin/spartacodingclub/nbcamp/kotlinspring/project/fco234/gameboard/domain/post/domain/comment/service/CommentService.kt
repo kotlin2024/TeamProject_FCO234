@@ -10,6 +10,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.Comment
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.toResponse
 import jakarta.transaction.Transactional
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotfoundException
 
 @Service
 class CommentService(
@@ -18,14 +19,14 @@ class CommentService(
 ) {
 
     fun getComment(postId: Long): List<CommentResponse>{
-        if(!postRepository.existsById(postId)) throw RuntimeException("몰라")
+        if(!postRepository.existsById(postId)) throw ModelNotfoundException("Post", postId)
         return commentRepository.findAllByPostId(postId).map{ it.toResponse()}
     }
 
 
     @Transactional
     fun createComment(postId:Long, createCommentRequest: CreateCommentRequest): CommentResponse {
-        val post = postRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
+        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotfoundException("Post", postId)
 //        val comment= commentRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
 
         return commentRepository.save(
@@ -39,8 +40,8 @@ class CommentService(
 
     @Transactional
     fun updateComment(postId:Long, commentId:Long, updateCommentRequest: UpdateCommentRequest): CommentResponse {
-        postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
+        postRepository.findByIdOrNull(postId) ?: throw ModelNotfoundException("Post", postId)
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotfoundException("Comment", commentId)
 
         comment.content = updateCommentRequest.content
         return commentRepository.save(comment).toResponse()
@@ -49,8 +50,8 @@ class CommentService(
 
     @Transactional
     fun deleteComment(postId: Long,commentId: Long){
-        postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
+        postRepository.findByIdOrNull(postId) ?: throw ModelNotfoundException("Post", postId)
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotfoundException("Comment", commentId)
 
         commentRepository.delete(comment)
     }
