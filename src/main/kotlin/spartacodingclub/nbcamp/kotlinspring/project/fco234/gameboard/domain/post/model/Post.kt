@@ -2,7 +2,9 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.Comment
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
 
 
@@ -10,6 +12,11 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.comm
 @Table(name = "post")
 @EntityListeners(AuditingEntityListener::class)
 class Post (
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
+    val user: User? =null,
+
     @Column(name = "title")
     var title: String,
 
@@ -17,12 +24,15 @@ class Post (
     var content: String,
 
     @Column(name = "channel_id") // 채널의 ID만 저장할 컬럼
-    var channelId: Long? = null // 채널의 ID를 저장할 변수
+    var channelId: Long? = null, // 채널의 ID를 저장할 변수
+
+
 
 ) : BaseTime() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
 
 }
 
