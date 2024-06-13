@@ -3,6 +3,7 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.CreatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.UpdatePostRequest
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
 
 
 interface PostService {
@@ -10,7 +11,8 @@ interface PostService {
     fun getAllPosts(): List<PostResponse>
     fun createPost(createPostRequest: CreatePostRequest): PostResponse
     fun updatePost(id: Long, updatePost: UpdatePostRequest): PostResponse
-    fun deletePost(id: Long)
+    fun deletePost(postId: Long)
+
 
     }
 

@@ -10,11 +10,16 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.Comment
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.model.toResponse
 import jakarta.transaction.Transactional
+import org.springframework.security.core.context.SecurityContextHolder
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 
 @Service
 class CommentService(
     private val commentRepository: CommentRepository,
     private val postRepository: PostRepository,
+    private val userRepository: UserRepository
 ) {
 
     fun getComment(postId: Long): List<CommentResponse>{
@@ -28,10 +33,19 @@ class CommentService(
         val post = postRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
 //        val comment= commentRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
 
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication.principal as UserPrincipal
+
+        val user = userRepository.findByEmail(principal.email)
+            ?: throw RuntimeException("너 누구야")
+
+
+
         return commentRepository.save(
             Comment(
             content = createCommentRequest.content,
-            post = post
+            post = post,
+            user = user,
         )
         ).toResponse()
     }
@@ -42,6 +56,18 @@ class CommentService(
         postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
 
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication.principal as UserPrincipal
+
+
+        val user = userRepository.findByEmail(principal.email)
+            ?: throw RuntimeException("User not found")
+
+        if(comment.post.user!!.id !=user.id && user.role!= UserRole.ADMIN ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+
+
+
+
         comment.content = updateCommentRequest.content
         return commentRepository.save(comment).toResponse()
 
@@ -51,6 +77,16 @@ class CommentService(
     fun deleteComment(postId: Long,commentId: Long){
         postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
         val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
+
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication.principal as UserPrincipal
+
+
+        val user = userRepository.findByEmail(principal.email)
+            ?: throw RuntimeException("User not found")
+
+        if(comment.post.user!!.id !=user.id && user.role!= UserRole.ADMIN) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+
 
         commentRepository.delete(comment)
     }

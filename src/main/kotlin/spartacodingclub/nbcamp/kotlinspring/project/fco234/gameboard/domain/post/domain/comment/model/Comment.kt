@@ -6,15 +6,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.dto.CommentResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.Post
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
 
 @Entity
 @Table(name = "comment")
 @EntityListeners(AuditingEntityListener::class)
 class Comment (
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="userId")
-//    val user: User,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userId", nullable=false)
+    val user :User,
 
 
     @Column(name="content")

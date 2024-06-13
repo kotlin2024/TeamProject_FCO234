@@ -15,7 +15,7 @@ class CommentController(
     private val commentService: CommentService
 ) {
 
-    @GetMapping
+    @GetMapping("/get")
     fun getComment(
        @PathVariable postId: Long,
     ): ResponseEntity<List<CommentResponse>> {

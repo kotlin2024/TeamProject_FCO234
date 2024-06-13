@@ -5,8 +5,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user
 
 interface UserRepository: JpaRepository<User, Long> {
 
-    //fun findByEmail(email:String): User?
-
     fun existsByEmail(email: String): Boolean
 
     fun findByEmail(email: String): User?
