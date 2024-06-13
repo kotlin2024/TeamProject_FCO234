@@ -1,6 +1,4 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.controller
-import io.swagger.v3.oas.annotations.Parameter
-import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -38,7 +36,7 @@ class CommentController(
     fun updateComment(
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
-        @RequestBody @Valid request: UpdateCommentRequest
+        @RequestBody  request: UpdateCommentRequest
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
