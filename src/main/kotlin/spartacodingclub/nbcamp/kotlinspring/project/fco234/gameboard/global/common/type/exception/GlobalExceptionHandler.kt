@@ -10,7 +10,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.secur
 class GlobalExceptionHandler {
 
     @ExceptionHandler(ModelNotfoundException::class)
-    fun handleModelNotfoundException(e: ModelNotfoundException): ResponseEntity<ErrorResponse> {
+    fun handleModelNotFoundException(e: ModelNotfoundException): ResponseEntity<ErrorResponse> {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(ErrorResponse(e.message))
