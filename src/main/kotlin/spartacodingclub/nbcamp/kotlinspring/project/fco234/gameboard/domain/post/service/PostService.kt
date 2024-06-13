@@ -13,6 +13,5 @@ interface PostService {
     fun updatePost(id: Long, updatePost: UpdatePostRequest): PostResponse
     fun deletePost(postId: Long)
 
-
     }
 

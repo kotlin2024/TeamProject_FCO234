@@ -15,6 +15,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotFoundException
 
 @Service
 class PostServiceImpl(
@@ -34,7 +35,7 @@ class PostServiceImpl(
 
     override fun getPost(id: Long): PostResponse {
 
-        val post =  postRepository.findByIdOrNull(id)?:throw RuntimeException("아몰라")
+        val post =  postRepository.findByIdOrNull(id)?:throw ModelNotFoundException("Post",id)
         return post.toResponse()
 
     }
