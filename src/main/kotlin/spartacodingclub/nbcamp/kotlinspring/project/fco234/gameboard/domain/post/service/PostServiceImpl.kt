@@ -69,7 +69,7 @@ class PostServiceImpl(
         val user = userRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(updatePosts.user!!.id !=user.id && user.role!= UserRole.ADMIN) throw RuntimeException("작성한 본인, admin 만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+        if(updatePosts.user!!.id !=user.id  && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER ))) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
         val (title, content) = updatePost
@@ -93,7 +93,7 @@ class PostServiceImpl(
             ?: throw RuntimeException("User not found")
 
 
-        if(post.user!!.id !=user.id && user.role!= UserRole.ADMIN ) throw RuntimeException("작성한 본인 혹은 admin 만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+        if(post.user!!.id !=user.id && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER )) ) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
 

@@ -3,6 +3,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.dto.CommentResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.dto.CreateCommentRequest
@@ -24,6 +25,7 @@ class CommentController(
             .body(commentService.getComment(postId))
     }
 
+    @PreAuthorize("hasRole('PLATFORM_USER')")
     @PostMapping()
     fun createComment(
         @PathVariable postId: Long,
@@ -34,6 +36,7 @@ class CommentController(
             .body(commentService.createComment(postId, request))
     }
 
+    @PreAuthorize("hasRole('PLATFORM_USER')")
     @PutMapping("/{commentId}")
     fun updateComment(
         @PathVariable postId: Long,
@@ -45,16 +48,17 @@ class CommentController(
             .body(commentService.updateComment(postId, commentId, request))
     }
 
-        @DeleteMapping("/{commentId}")
-        fun deleteComment(
-            @PathVariable postId: Long,
-            @PathVariable commentId: Long
-        ): ResponseEntity<Unit> {
-            commentService.deleteComment(postId, commentId,)
-            return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build()
-        }
+    @PreAuthorize("hasRole('PLATFORM_USER')")
+    @DeleteMapping("/{commentId}")
+    fun deleteComment(
+        @PathVariable postId: Long,
+        @PathVariable commentId: Long
+    ): ResponseEntity<Unit> {
+        commentService.deleteComment(postId, commentId,)
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
+    }
 
 
 }

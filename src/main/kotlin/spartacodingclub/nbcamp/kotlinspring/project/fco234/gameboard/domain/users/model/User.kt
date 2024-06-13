@@ -16,8 +16,8 @@ class User(
     var profile: Profile,
 
     @Enumerated(EnumType.STRING)
-    @Column(name="role")
-    val role: UserRole,
+    @Column(name="role", length = 50)
+    var role: UserRole, // 해당부분을 val 에서 var로 수정 (관리자가 권한을 부여해야하기때문에 var로 수정)
 
 
 

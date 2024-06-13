@@ -63,7 +63,7 @@ class CommentService(
         val user = userRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(comment.post.user!!.id !=user.id && user.role!= UserRole.ADMIN ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+        if(comment.post.user!!.id !=user.id  && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER )) ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
 
@@ -85,7 +85,8 @@ class CommentService(
         val user = userRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(comment.post.user!!.id !=user.id && user.role!= UserRole.ADMIN) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+
+        if(comment.post.user!!.id !=user.id && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER ))) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
         commentRepository.delete(comment)
