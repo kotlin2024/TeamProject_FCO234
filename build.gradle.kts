@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.noarg") version "1.8.22"
+    kotlin("plugin.jpa") version "1.9.24"
 }
 
 group = "spartacodingclub.nbcamp.kotlinspring.project.fco234"
@@ -51,7 +52,21 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testImplementation("org.springframework.security:spring-security-test")
+
+    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
+
+
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
 
 kotlin {
     compilerOptions {
