@@ -7,7 +7,7 @@ data class ChannelResponse(
     val title: String,
     val description: String,
     var ageLimit: Int,
-    var gameTheme: String,
+    var gameTitle: String,
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
 )

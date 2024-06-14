@@ -3,6 +3,6 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.adm
 data class CreateChannelRequest(
     val title: String,
     val description: String?,
-    val gameTheme: String,
+    val gameTitle: String,
     val ageLimit: Int
 )

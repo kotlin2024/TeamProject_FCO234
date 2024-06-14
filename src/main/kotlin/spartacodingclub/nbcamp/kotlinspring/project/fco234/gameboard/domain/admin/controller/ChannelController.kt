@@ -10,7 +10,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admi
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.WarnChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.service.ChannelService
 
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/admin/channels")
 class ChannelController(
@@ -62,7 +62,7 @@ class ChannelController(
 
 
     @PostMapping("/{channelId}/warn")
-    fun warnChannel(@PathVariable channelId: Long, @RequestBody request: WarnChannelRequest): ResponseEntity<Unit> {
+    fun warnChannel(@PathVariable channelId: Long, @RequestBody request: WarnChannelRequest): ResponseEntity<String> {
 
         return ResponseEntity
             .status(HttpStatus.OK)

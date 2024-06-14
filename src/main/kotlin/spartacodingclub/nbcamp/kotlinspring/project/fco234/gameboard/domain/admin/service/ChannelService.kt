@@ -11,7 +11,7 @@ interface ChannelService {
     fun createChannel(request: CreateChannelRequest): ChannelResponse
     fun updateChannel(channelId: Long, request: UpdateChannelRequest): ChannelResponse
     fun deleteChannel(channelId: Long)
-    fun warnChannel(channelId: Long, request: WarnChannelRequest)
+    fun warnChannel(channelId: Long, request: WarnChannelRequest):String
     fun activateChannel(channelId: Long)
     fun deactivateChannel(channelId: Long)
 

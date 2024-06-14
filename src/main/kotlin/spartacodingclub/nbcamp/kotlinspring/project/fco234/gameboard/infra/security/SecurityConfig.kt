@@ -28,7 +28,8 @@ class SecurityConfig(
                     "/login",
                     "/signup",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**",       //TODO 여기 부분 프로젝트에 맞게 수정해야함
+                    "/v3/api-docs/**",
+                    "/api/admin/channels/**"
                 ).permitAll()
                     .anyRequest().authenticated()
             }

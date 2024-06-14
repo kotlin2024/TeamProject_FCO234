@@ -8,19 +8,17 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.comm
 @Table(name = "admin_channel")
 class AdminChannel (
     @Column(name= "title")
-    var title : String?,
+    var title : String,
 
     @Column(name= "content")
     var description : String?,
 
-    @Column(name = "channel_id")
-    var channelId: Long? = null,
 
     @Column(name = "Age_Limit")
     var ageLimit: Int? = null,
 
-    @Column(name = "GameTheme")
-    var gameTheme: String,
+    @Column(name = "game_title")
+    var gameTitle: String,
 
     @Column(name = "active")
     var active: Boolean = false // 활성화 상태를 저장하는 필드
@@ -34,10 +32,10 @@ class AdminChannel (
     fun toResponse(): ChannelResponse{
         return ChannelResponse(
             id = this.id,
-            channelId = this.channelId!!,
+            title = this.title,
             description = this.description!!,
             ageLimit = this.ageLimit!!,
-            gameTheme = this.gameTheme,
+            gameTitle = this.gameTitle,
             createdAt = createdAt,
             updatedAt = updatedAt
         )
