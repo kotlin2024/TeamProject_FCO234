@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class ChannelResponse(
     val id: Long,
-    val channelId: Long,
+    val title: String,
     val description: String,
     var ageLimit: Int,
     var gameTheme: String,
