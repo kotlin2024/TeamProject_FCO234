@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotFoundException
 
 @Service
 class CommentService(
@@ -23,14 +24,14 @@ class CommentService(
 ) {
 
     fun getComment(postId: Long): List<CommentResponse>{
-        if(!postRepository.existsById(postId)) throw RuntimeException("몰라")
+        if(!postRepository.existsById(postId)) throw ModelNotFoundException("Post", postId)
         return commentRepository.findAllByPostId(postId).map{ it.toResponse()}
     }
 
 
     @Transactional
     fun createComment(postId:Long, createCommentRequest: CreateCommentRequest): CommentResponse {
-        val post = postRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
+        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
 //        val comment= commentRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
 
         val authentication = SecurityContextHolder.getContext().authentication
@@ -53,8 +54,8 @@ class CommentService(
 
     @Transactional
     fun updateComment(postId:Long, commentId:Long, updateCommentRequest: UpdateCommentRequest): CommentResponse {
-        postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
+        postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
@@ -75,8 +76,8 @@ class CommentService(
 
     @Transactional
     fun deleteComment(postId: Long,commentId: Long){
-        postRepository.findByIdOrNull(postId) ?: throw RuntimeException("Post")
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw RuntimeException("Comment")
+        postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal

@@ -41,7 +41,7 @@ class CommentController(
     fun updateComment(
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
-        @RequestBody @Valid request: UpdateCommentRequest
+        @RequestBody  request: UpdateCommentRequest
     ): ResponseEntity<CommentResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
