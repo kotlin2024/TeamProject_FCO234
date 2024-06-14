@@ -33,10 +33,12 @@ class SecurityConfig(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/api/admin/channels/**",
-                    "/api/v1/posts/get/**",//
+                    "/api/v1/posts/get/**",
                     "/api/v1/posts/{postId}/comments/get/**",
                     "/admin/**",
-                    "/verify-email"
+                    "/verify-email",
+                    "/api/users/profile/**", //해당부분은 테스트용으로 작성한 것이며 추후에 해당ㅂ분을 삭제하고 프로필 컨트롤러에  preAuthorize를 넣어야함
+                    "/api/users/update-password"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
