@@ -2,6 +2,9 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.secu
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.fromHierarchy
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
@@ -30,6 +33,9 @@ class SecurityConfig(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/api/admin/channels/**"
+                    "/api/v1/posts/get/**",//
+                    "/api/v1/posts/{postId}/comments/get/**",
+                    "/admin/**"
                 ).permitAll()
                     .anyRequest().authenticated()
             }
@@ -40,4 +46,12 @@ class SecurityConfig(
             }
             .build()
     }
+
+    @Bean
+    fun roleHierarchy(): RoleHierarchy {
+
+        return RoleHierarchyImpl.fromHierarchy("ROLE_ADMIN > ROLE_CHANNEL_ADMIN \n ROLE_CHANNEL_ADMIN > ROLE_CHANNEL_MANAGER \n ROLE_CHANNEL_MANAGER > ROLE_CHANNEL_USER \n ROLE_CHANNEL_USER > ROLE_PLATFORM_USER")
+
+    }
+
 }

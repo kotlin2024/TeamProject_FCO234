@@ -15,7 +15,7 @@ import java.time.Duration
 
 
 @Service
-class imsiSignupService(
+class AuthService(
     private val jwtPlugin: JwtPlugin,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,)
@@ -49,4 +49,13 @@ class imsiSignupService(
             )
         ).toResponse()
     }
+
+    fun getUserByEmail(userEmail: String): User{
+
+        val usersEmail =userRepository.findByEmail(userEmail) ?: throw IllegalArgumentException("해당 이메일이 없음")
+        return usersEmail
+    }
+
+
+
 }
