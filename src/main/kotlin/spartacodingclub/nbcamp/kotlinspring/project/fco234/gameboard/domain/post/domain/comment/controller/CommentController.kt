@@ -1,4 +1,6 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.controller
+
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
