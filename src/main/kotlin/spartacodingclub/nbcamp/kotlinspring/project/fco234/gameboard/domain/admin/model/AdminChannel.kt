@@ -13,7 +13,6 @@ class AdminChannel (
     @Column(name= "content")
     var description : String?,
 
-
     @Column(name = "Age_Limit")
     var ageLimit: Int? = null,
 
