@@ -44,6 +44,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     implementation("org.springframework.boot:spring-boot-starter-mail") // 이메일 인증
+    implementation("org.springframework.boot:spring-boot-starter-aop") //aop
+    implementation("org.springframework.boot:spring-boot-starter-validation") //validation머시기
+
 
     runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")

@@ -41,7 +41,6 @@ class PostController(
     @PostMapping("/")
     fun createPost(@RequestBody request: CreatePostRequest): ResponseEntity<PostResponse> {
 
-
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(postService.createPost(request))

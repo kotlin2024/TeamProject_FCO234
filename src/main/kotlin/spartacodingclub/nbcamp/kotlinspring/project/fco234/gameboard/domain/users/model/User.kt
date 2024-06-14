@@ -10,10 +10,13 @@ class User(
     val email:String,
 
     @Column(name="password")
-    val password:String,
+    var password:String, // 비밀번호 변경이 가능함에 따라 val에서 var로 변경
 
     @Embedded
     var profile: Profile,
+
+    @Column(name="introduce")
+    var introduce: String?,
 
     @Enumerated(EnumType.STRING)
     @Column(name="role", length = 50)
@@ -33,5 +36,6 @@ fun User.toResponse(): UserResponse {
         birthday =  profile.birthday,
         name = profile.name,
         role = role.name,
+        introduce = introduce
     )
 }

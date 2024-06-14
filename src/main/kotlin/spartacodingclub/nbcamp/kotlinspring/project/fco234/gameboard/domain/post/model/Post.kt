@@ -32,7 +32,6 @@ class Post (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-
 }
 
 fun Post.toResponse(): PostResponse {
