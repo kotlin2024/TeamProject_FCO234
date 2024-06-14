@@ -14,5 +14,6 @@ interface ChannelService {
     fun warnChannel(channelId: Long, request: WarnChannelRequest):String
     fun activateChannel(channelId: Long)
     fun deactivateChannel(channelId: Long)
+    fun assignManager(channelId: Long, userId:Long):String
 
 }

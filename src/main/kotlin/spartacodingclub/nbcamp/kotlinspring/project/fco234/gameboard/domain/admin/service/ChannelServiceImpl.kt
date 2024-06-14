@@ -3,25 +3,31 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.adm
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.ChannelResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.CreateChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.UpdateChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.WarnChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.model.AdminChannel
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.model.ChannelManager
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.model.Type
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.model.Warning
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.repository.ChannelManagerRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.repository.ChannelRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.repository.WarningRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
 
 @Service
 class ChannelServiceImpl(
     private val channelRepository: ChannelRepository,
-    private val warningRepository: WarningRepository
+    private val warningRepository: WarningRepository,
+    private val userRepository: UserRepository,
+    private val channelManagerRepository: ChannelManagerRepository
 ): ChannelService {
 
 
     override fun getChannel(channelId: Long): ChannelResponse {
-        val adminChannel = channelRepository.findByIdOrNull(channelId)?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
+        val adminChannel = channelRepository.findByIdOrNull(channelId) ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
         return adminChannel.toResponse()
     }
 
@@ -30,18 +36,19 @@ class ChannelServiceImpl(
     }
 
     override fun createChannel(request: CreateChannelRequest): ChannelResponse {
-       val createChannel = AdminChannel(
-           title = request.title,
-           description = request.description,
-           gameTitle = request.gameTitle,
-           ageLimit = request.ageLimit,
-       )
+        val createChannel = AdminChannel(
+            title = request.title,
+            description = request.description,
+            gameTitle = request.gameTitle,
+            ageLimit = request.ageLimit,
+        )
         return channelRepository.save(createChannel).toResponse()
     }
 
     override fun updateChannel(channelId: Long, request: UpdateChannelRequest): ChannelResponse {
-        val updateChannel = channelRepository.findByIdOrNull(channelId) ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
-        val (title, description,gameTitle,ageLimit) = request
+        val updateChannel =
+            channelRepository.findByIdOrNull(channelId) ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
+        val (title, description, gameTitle, ageLimit) = request
 
         updateChannel.title = title
         updateChannel.description = description
@@ -56,15 +63,15 @@ class ChannelServiceImpl(
         channelRepository.deleteById(channelId)
     }
 
-    override fun warnChannel(channelId: Long, request: WarnChannelRequest):String {
-        channelRepository.findByIdOrNull(channelId) ?:  throw EntityNotFoundException("채널을 찾을 수 없습니다")
+    override fun warnChannel(channelId: Long, request: WarnChannelRequest): String {
+        channelRepository.findByIdOrNull(channelId) ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
         val warning = Warning(
             reason = request.reason,
             source = request.source,
             targetId = channelId,
             type = Type.CHANNEL
-            )
-       warningRepository.save(warning)
+        )
+        warningRepository.save(warning)
         return request.source
     }
 
@@ -83,6 +90,18 @@ class ChannelServiceImpl(
             channelRepository.save(channel)
         }
     }
+
+    override fun assignManager(channelId: Long, userId: Long): String {
+        val channel = channelRepository.findByIdOrNull(channelId) ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
+
+        val user = userRepository.findByIdOrNull(userId) ?: throw EntityNotFoundException("유저 찾을 수 없습니다")
+
+        val channelManager = ChannelManager(user, channel)
+        channelManagerRepository.save(channelManager)
+        return "Manager assigned successfully"
+
+    }
+
 
 }
 

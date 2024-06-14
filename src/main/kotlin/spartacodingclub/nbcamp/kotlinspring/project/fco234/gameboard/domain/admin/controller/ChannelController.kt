@@ -10,7 +10,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admi
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.WarnChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.service.ChannelService
 
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/admin/channels")
 class ChannelController(
@@ -84,6 +84,13 @@ class ChannelController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .build()
+    }
+
+    @PostMapping("/{channelId}/assign-manager/{userId}")
+    fun assignManager(@PathVariable channelId: Long, @PathVariable userId: Long): ResponseEntity<String> {
+        channelService.assignManager(channelId, userId)
+        return ResponseEntity.ok("Manager assigned successfully")
+
     }
 
 }

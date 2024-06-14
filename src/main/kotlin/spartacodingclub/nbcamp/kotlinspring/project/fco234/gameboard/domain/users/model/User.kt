@@ -1,6 +1,7 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model
 
 import jakarta.persistence.*
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.model.Channel
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.dto.UserResponse
 
 @Entity
