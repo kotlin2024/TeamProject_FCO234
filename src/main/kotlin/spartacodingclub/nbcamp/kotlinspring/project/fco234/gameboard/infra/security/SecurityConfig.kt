@@ -32,6 +32,7 @@ class SecurityConfig(
                     "/signup",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
+                    "/api/admin/channels/**"
                     "/api/v1/posts/get/**",//
                     "/api/v1/posts/{postId}/comments/get/**",
                     "/admin/**"
