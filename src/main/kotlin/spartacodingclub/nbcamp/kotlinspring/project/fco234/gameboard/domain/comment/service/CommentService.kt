@@ -11,8 +11,8 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity.toResponse
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 
@@ -20,7 +20,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exce
 class CommentService (
     private val commentRepository: CommentRepository,
     private val postRepository: PostRepository,
-    private val userRepository: UserRepository
+    private val memberRepository: MemberRepository
 
 ) {
 
@@ -45,7 +45,7 @@ class CommentService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("너 누구야")
 
 
@@ -54,7 +54,7 @@ class CommentService (
             Comment(
             content = createCommentRequest.content,
             post = post,
-            user = user,
+            member = user,
         )
         ).toResponse()
     }
@@ -69,10 +69,10 @@ class CommentService (
         val principal = authentication.principal as UserPrincipal
 
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(comment.post.user!!.id !=user.id  && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER )) ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+        if(comment.post.member!!.id !=user.id  && (user.role == MemberRole.PLATFORM_USER ||(user.role== MemberRole.CHANNEL_USER )) ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
 
@@ -91,11 +91,11 @@ class CommentService (
         val principal = authentication.principal as UserPrincipal
 
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
 
-        if(comment.post.user!!.id !=user.id && (user.role == UserRole.PLATFORM_USER ||(user.role== UserRole.CHANNEL_USER ))) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
+        if(comment.post.member!!.id !=user.id && (user.role == MemberRole.PLATFORM_USER ||(user.role== MemberRole.CHANNEL_USER ))) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
 
         commentRepository.delete(comment)

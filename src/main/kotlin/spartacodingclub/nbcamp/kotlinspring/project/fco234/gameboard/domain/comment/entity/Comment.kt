@@ -2,11 +2,10 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.com
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.domain.post.entity.Post
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.dto.response.CommentResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.Post
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.User
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
 
 @Entity
 @Table(name = "comment")
@@ -15,7 +14,7 @@ class Comment (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userId", nullable=false)
-    val user :User,
+    val member :Member,
 
     @Column(name="content")
     var content:String,

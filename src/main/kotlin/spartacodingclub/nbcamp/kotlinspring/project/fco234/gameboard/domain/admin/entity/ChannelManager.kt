@@ -1,7 +1,7 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.entity
 
 import jakarta.persistence.*
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.User
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
 
 @Entity
 @Table(name = "channel_manager")
@@ -9,7 +9,7 @@ class ChannelManager(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    val user: User,
+    val member: Member,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_channel_id")

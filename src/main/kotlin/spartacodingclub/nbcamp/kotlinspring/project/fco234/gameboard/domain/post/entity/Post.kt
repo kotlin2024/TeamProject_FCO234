@@ -3,7 +3,7 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.response.PostResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.User
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
 
 
@@ -14,7 +14,7 @@ class Post (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
-    val user: User? =null,
+    val member: Member? =null,
 
     @Column(name = "title")
     var title: String,

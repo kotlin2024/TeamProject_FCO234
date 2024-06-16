@@ -1,4 +1,4 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.request
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern

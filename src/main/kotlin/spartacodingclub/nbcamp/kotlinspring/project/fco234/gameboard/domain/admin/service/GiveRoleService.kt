@@ -2,24 +2,24 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.adm
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 
 @Service
 class GiveRoleService(
 
-    private val userRepository: UserRepository
+    private val memberRepository: MemberRepository
 ) {
 
     fun giveRole(
         userId: Long,
-        giveRole: UserRole
+        giveRole: MemberRole
     ) {
 
-        var user = userRepository.findByIdOrNull(userId)
+        var user = memberRepository.findByIdOrNull(userId)
             ?: throw RuntimeException("대충 예외 던져")
         user.role = giveRole
-        userRepository.save(user)
+        memberRepository.save(user)
     }
 
 }

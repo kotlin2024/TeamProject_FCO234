@@ -2,6 +2,6 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.r
 
 data class LoginRequest (
 
-    val email: String,
+    val username: String,
     val password: String
 )

@@ -1,4 +1,4 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.aop
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.aop
 
 import jakarta.validation.Constraint
 import jakarta.validation.Payload

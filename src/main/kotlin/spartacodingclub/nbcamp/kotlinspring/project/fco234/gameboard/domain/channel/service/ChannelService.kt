@@ -14,14 +14,14 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admi
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.repository.ChannelManagerRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.repository.WarningRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 
 @Service
 class ChannelService (
 
     private val channelRepository: ChannelRepository,
     private val warningRepository: WarningRepository,
-    private val userRepository: UserRepository,
+    private val memberRepository: MemberRepository,
     private val channelManagerRepository: ChannelManagerRepository
 ) {
 
@@ -135,7 +135,7 @@ class ChannelService (
         val channel = channelRepository.findByIdOrNull(channelId)
             ?: throw EntityNotFoundException("채널을 찾을 수 없습니다")
 
-        val user = userRepository.findByIdOrNull(userId)
+        val user = memberRepository.findByIdOrNull(userId)
             ?: throw EntityNotFoundException("유저 찾을 수 없습니다")
 
         val channelManager = ChannelManager(user, channel)

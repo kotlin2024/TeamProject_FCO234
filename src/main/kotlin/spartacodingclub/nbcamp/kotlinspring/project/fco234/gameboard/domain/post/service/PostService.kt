@@ -6,19 +6,14 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.service.AuthService
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.CreatePostRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.UpdatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.request.CreatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.request.UpdatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.response.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.toResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.Post
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.toResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 
@@ -26,7 +21,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exce
 class PostService (
 
     private val postRepository: PostRepository,
-    private val userRepository: UserRepository,
+    private val memberRepository: MemberRepository,
     private val authService: AuthService,
     private val commentRepository: CommentRepository
 ) {
@@ -54,13 +49,13 @@ class PostService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("너 누구야")
 
         val createdPost = Post(
             title = createPostRequest.title,
             content = createPostRequest.content,
-            user= user
+            member= user
             )
 
         return postRepository.save(createdPost).toResponse()
@@ -77,10 +72,10 @@ class PostService (
         val principal = authentication.principal as UserPrincipal
 
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(updatePosts.user!!.id !=user.id && (user.role == UserRole.PLATFORM_USER || (user.role == UserRole.CHANNEL_USER)))
+        if(updatePosts.member!!.id !=user.id && (user.role == MemberRole.PLATFORM_USER || (user.role == MemberRole.CHANNEL_USER)))
             throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
         val (title, content) = updatePost
@@ -102,10 +97,10 @@ class PostService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
 
-        val user = userRepository.findByEmail(principal.email)
+        val user = memberRepository.findByEmail(principal.email)
             ?: throw RuntimeException("User not found")
 
-        if(post.user!!.id !=user.id && (user.role == UserRole.PLATFORM_USER || (user.role == UserRole.CHANNEL_USER)))
+        if(post.member!!.id !=user.id && (user.role == MemberRole.PLATFORM_USER || (user.role == MemberRole.CHANNEL_USER)))
             throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
 
         commentRepository.deleteAll(commentRepository.findAllByPostId(postId))
