@@ -8,52 +8,63 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admi
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.dto.request.CreateChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.dto.request.UpdateChannelRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.request.WarnChannelRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.service.ChannelService
 
 @PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("/api/admin/channels")
-class ChannelController(
+class ChannelController (
+
     private val channelService: ChannelService
-    ) {
+) {
 
     @GetMapping("/{channelid}")
     fun getChannel(
         @PathVariable channelid: Long,
-    ): ResponseEntity<ChannelResponse> {
-        return ResponseEntity
+    ): ResponseEntity<ChannelResponse> =
+
+        ResponseEntity
             .status(HttpStatus.OK)
             .body(channelService.getChannel(channelid))
-    }
-
-    @GetMapping()
-    fun getAllChannels(): ResponseEntity<List<ChannelResponse>> {
-        return ResponseEntity
-        .status(HttpStatus.OK)
-        .body(channelService.getAllChannels())
-
-}
 
 
-    @PostMapping()
-    fun createChannel(@RequestBody request: CreateChannelRequest): ResponseEntity<ChannelResponse> {
-        return ResponseEntity
+    @GetMapping
+    fun getAllChannels():
+            ResponseEntity<List<ChannelResponse>> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(channelService.getAllChannels())
+
+
+
+    @PostMapping
+    fun createChannel(
+        @RequestBody request: CreateChannelRequest
+    ): ResponseEntity<ChannelResponse> =
+
+        ResponseEntity
             .status(HttpStatus.CREATED)
             .body(channelService.createChannel(request))
 
-    }
 
 
     @PutMapping("/{channelid}")
-    fun updateChannel(@PathVariable channelid: Long, @RequestBody request: UpdateChannelRequest): ResponseEntity<ChannelResponse> {
-        return ResponseEntity
+    fun updateChannel(
+        @PathVariable channelid: Long,
+        @RequestBody request: UpdateChannelRequest
+    ): ResponseEntity<ChannelResponse> =
+
+        ResponseEntity
             .status(HttpStatus.OK)
             .body(channelService.updateChannel(channelid, request))
-    }
+
 
 
     @DeleteMapping("/{channelid}")
-    fun deleteChannel(@PathVariable channelid: Long): ResponseEntity<Unit> {
+    fun deleteChannel(
+        @PathVariable channelid: Long
+    ): ResponseEntity<Unit> {
+
         channelService.deleteChannel(channelid)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
@@ -62,15 +73,21 @@ class ChannelController(
 
 
     @PostMapping("/{channelId}/warn")
-    fun warnChannel(@PathVariable channelId: Long, @RequestBody request: WarnChannelRequest): ResponseEntity<String> {
+    fun warnChannel(
+        @PathVariable channelId: Long,
+        @RequestBody request: WarnChannelRequest
+    ): ResponseEntity<String> =
 
-        return ResponseEntity
+        ResponseEntity
             .status(HttpStatus.OK)
             .body(channelService.warnChannel(channelId,request))
-    }
+
 
     @PatchMapping("/{channelId}/activate")
-    fun activateChannel(@PathVariable channelId: Long): ResponseEntity<Unit> {
+    fun activateChannel(
+        @PathVariable channelId: Long
+    ): ResponseEntity<Unit> {
+
         channelService.activateChannel(channelId)
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -79,18 +96,28 @@ class ChannelController(
 
 
     @PatchMapping("/{channelId}/deactivate")
-    fun deactivateChannel(@PathVariable channelId: Long): ResponseEntity<Unit> {
+    fun deactivateChannel(
+        @PathVariable channelId: Long
+    ): ResponseEntity<Unit> {
+
         channelService.deactivateChannel(channelId)
         return ResponseEntity
             .status(HttpStatus.OK)
             .build()
     }
 
-    @PostMapping("/{channelId}/assign-manager/{userId}")
-    fun assignManager(@PathVariable channelId: Long, @PathVariable userId: Long): ResponseEntity<String> {
-        channelService.assignManager(channelId, userId)
-        return ResponseEntity.ok("Manager assigned successfully")
 
+
+    @PostMapping("/{channelId}/assign-manager/{userId}")
+    fun assignManager(
+        @PathVariable channelId: Long,
+        @PathVariable userId: Long
+    ): ResponseEntity<String> {
+
+        channelService.assignManager(channelId, userId)
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body("Manager assigned successfully")
     }
 
 }

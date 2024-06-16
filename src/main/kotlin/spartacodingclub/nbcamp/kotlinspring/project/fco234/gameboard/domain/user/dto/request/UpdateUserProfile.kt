@@ -10,7 +10,7 @@ data class UpdateUserProfile(
         regexp = "^[a-z0-9]{4,10}$",
         message = "이름은 4자에서 10자 사이여야 하며, 알파벳 소문자와 숫자만 포함할 수 있습니다."
     )
-    val name:String,
+    val name: String,
 
-    val introduce:String?
+    val introduce: String?
 )

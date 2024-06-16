@@ -9,8 +9,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.UpdatePostRequest
 
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.service.PostService
-
 @RestController
 @RequestMapping("/api/v1/posts")
 class PostController(

@@ -20,8 +20,9 @@ class Warning(
     @Column(name = "target_id")
     val targetId: Long
 
+) : BaseTime() {
 
-):BaseTime() {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
 }

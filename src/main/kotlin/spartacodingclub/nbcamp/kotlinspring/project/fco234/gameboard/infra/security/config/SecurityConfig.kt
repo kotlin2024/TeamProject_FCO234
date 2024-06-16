@@ -14,7 +14,8 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.secur
 
 @Configuration
 @EnableWebSecurity // 통신할때 관련 보안 기능을 키기 위해서 설정
-class SecurityConfig(
+class SecurityConfig (
+
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
     private val authenticationEntryPoint: CustomAuthenticationEntryPoint,//
     private val accessDeniedHandler: AccessDeniedHandler,

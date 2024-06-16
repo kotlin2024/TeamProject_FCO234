@@ -7,13 +7,14 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.comm
 @Entity
 @Table(name = "admin_channel")
 class AdminChannel (
+
     @Column(name= "title")
-    var title : String,
+    var title: String,
 
     @Column(name= "content")
-    var description : String?,
+    var description: String?,
 
-    @Column(name = "Age_Limit")
+    @Column(name = "age_Limit")
     var ageLimit: Int? = null,
 
     @Column(name = "game_title")
@@ -23,13 +24,14 @@ class AdminChannel (
     var active: Boolean = false // 활성화 상태를 저장하는 필드
 
 
-):BaseTime() {
+) : BaseTime() {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0
 
-    fun toResponse(): ChannelResponse {
-        return ChannelResponse(
+    fun toResponse() =
+        ChannelResponse(
             id = this.id,
             title = this.title,
             description = this.description!!,

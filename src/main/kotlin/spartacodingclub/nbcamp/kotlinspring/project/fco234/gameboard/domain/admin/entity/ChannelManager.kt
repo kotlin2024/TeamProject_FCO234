@@ -6,6 +6,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user
 @Entity
 @Table(name = "channel_manager")
 class ChannelManager(
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User,
@@ -14,6 +15,8 @@ class ChannelManager(
     @JoinColumn(name = "admin_channel_id")
     val adminChannel: AdminChannel
 ) {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
 }

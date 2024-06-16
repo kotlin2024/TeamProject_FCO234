@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class PasswordEncoderConfig { // 비밀번호 인코딩!
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder =
+        BCryptPasswordEncoder()
+
 }

@@ -11,41 +11,44 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 
 @RestController
 @RequestMapping("/api/v1/posts/{postId}/comments")
-class CommentController(
+class CommentController (
     private val commentService: CommentService
 ) {
 
     @GetMapping("/get")
     fun getComment(
-       @PathVariable postId: Long,
-    ): ResponseEntity<List<CommentResponse>> {
-        return ResponseEntity
+        @PathVariable postId: Long
+    ): ResponseEntity<List<CommentResponse>> =
+
+        ResponseEntity
             .status(HttpStatus.OK)
             .body(commentService.getComment(postId))
-    }
+
 
     @PreAuthorize("hasRole('PLATFORM_USER')")
     @PostMapping()
     fun createComment(
         @PathVariable postId: Long,
         @RequestBody request: CreateCommentRequest
-    ): ResponseEntity<CommentResponse> {
-        return ResponseEntity
+    ): ResponseEntity<CommentResponse> =
+
+        ResponseEntity
             .status(HttpStatus.CREATED)
             .body(commentService.createComment(postId, request))
-    }
+
 
     @PreAuthorize("hasRole('PLATFORM_USER')")
     @PutMapping("/{commentId}")
     fun updateComment(
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
-        @RequestBody  request: UpdateCommentRequest
-    ): ResponseEntity<CommentResponse> {
-        return ResponseEntity
+        @RequestBody request: UpdateCommentRequest
+    ): ResponseEntity<CommentResponse> =
+
+        ResponseEntity
             .status(HttpStatus.OK)
             .body(commentService.updateComment(postId, commentId, request))
-    }
+
 
     @PreAuthorize("hasRole('PLATFORM_USER')")
     @DeleteMapping("/{commentId}")
@@ -53,11 +56,11 @@ class CommentController(
         @PathVariable postId: Long,
         @PathVariable commentId: Long
     ): ResponseEntity<Unit> {
+
         commentService.deleteComment(postId, commentId,)
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .build()
     }
-
 
 }

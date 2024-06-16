@@ -2,7 +2,8 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.adm
 
 import java.time.LocalDateTime
 
-data class ChannelResponse(
+data class ChannelResponse (
+
     val id: Long,
     val title: String,
     val description: String,

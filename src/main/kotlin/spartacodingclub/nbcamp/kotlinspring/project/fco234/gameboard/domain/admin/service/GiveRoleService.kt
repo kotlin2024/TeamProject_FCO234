@@ -7,11 +7,18 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user
 
 @Service
 class GiveRoleService(
-    private val userRepository: UserRepository,
+
+    private val userRepository: UserRepository
 ) {
-    fun giveRole(userId:Long,giveRole:UserRole) {
-        var user=userRepository.findByIdOrNull(userId) ?: throw RuntimeException("대충 예외 던져")
-        user.role= giveRole
+
+    fun giveRole(
+        userId: Long,
+        giveRole: UserRole
+    ) {
+
+        var user = userRepository.findByIdOrNull(userId)
+            ?: throw RuntimeException("대충 예외 던져")
+        user.role = giveRole
         userRepository.save(user)
     }
 

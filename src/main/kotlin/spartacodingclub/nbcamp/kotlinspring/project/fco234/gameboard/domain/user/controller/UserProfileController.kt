@@ -10,22 +10,36 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user
 
 @RequestMapping("/api/users/profile")
 @RestController
-class UserProfileController(
+class UserProfileController (
+
     private val userProfileService: UserProfileService
 ) {
 
     @GetMapping
-    fun getUserProfile(@RequestParam userId: Long):ResponseEntity<UserResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.getUserProfile(userId))
-    }
+    fun getUserProfile(
+        @RequestParam userId: Long
+    ): ResponseEntity<UserResponse> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userProfileService.getUserProfile(userId))
 
     @GetMapping("/my_profile") //사실 USERiD 필요없긴함
-    fun getMyProfile():ResponseEntity<UserResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.getMyProfile())
-    }
+    fun getMyProfile():
+            ResponseEntity<UserResponse> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userProfileService.getMyProfile())
+
 
     @PutMapping
-    fun updateProfile(@Valid @RequestBody updateUserProfile: UpdateUserProfile):ResponseEntity<UserResponse>{
-        return ResponseEntity.status(HttpStatus.OK).body(userProfileService.updateProfile(updateUserProfile))
-    }
+    fun updateProfile(
+        @Valid @RequestBody updateUserProfile: UpdateUserProfile
+    ): ResponseEntity<UserResponse> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userProfileService.updateProfile(updateUserProfile))
+
 }

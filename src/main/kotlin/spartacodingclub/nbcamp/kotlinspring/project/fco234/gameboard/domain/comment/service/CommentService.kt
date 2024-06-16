@@ -1,4 +1,4 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.service
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity
 
 import org.springframework.data.repository.findByIdOrNull
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
@@ -17,21 +17,29 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.secur
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 
 @Service
-class CommentService(
+class CommentService (
     private val commentRepository: CommentRepository,
     private val postRepository: PostRepository,
     private val userRepository: UserRepository
+
 ) {
 
-    fun getComment(postId: Long): List<CommentResponse>{
+    fun getComment(
+        postId: Long
+    ): List<CommentResponse>{
+
         if(!postRepository.existsById(postId)) throw ModelNotFoundException("Post", postId)
         return commentRepository.findAllByPostId(postId).map{ it.toResponse()}
     }
 
 
     @Transactional
-    fun createComment(postId:Long, createCommentRequest: CreateCommentRequest): CommentResponse {
-        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+    fun createComment(
+        postId: Long,
+        createCommentRequest: CreateCommentRequest
+    ): CommentResponse {
+        val post = postRepository.findByIdOrNull(postId)
+            ?: throw ModelNotFoundException("Post", postId)
 //        val comment= commentRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
 
         val authentication = SecurityContextHolder.getContext().authentication

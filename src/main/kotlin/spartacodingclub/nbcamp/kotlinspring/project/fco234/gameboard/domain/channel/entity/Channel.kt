@@ -2,16 +2,16 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.cha
 
 import jakarta.persistence.*
 
-
 @Entity
 @Table(name = "gameboard")
-class Channel(
+class Channel (
+
     var name: String,
     var description: String,
-){
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = 0
+) {
 
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
 //    @OneToMany(mappedBy = "channel", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 //    val post: List<Post> = emptyList()

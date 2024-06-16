@@ -1,8 +1,8 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.domain.post.entity
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.response.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.User
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
 

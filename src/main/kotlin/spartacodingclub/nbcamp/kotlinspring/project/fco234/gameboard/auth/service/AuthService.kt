@@ -17,42 +17,48 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.toResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.emailsender.service.EmailService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.emailsender.service.EmailSenderService
 import java.time.Duration
 import java.util.*
 
-
 @Service
-class AuthService(
+class AuthService (
     private val jwtPlugin: JwtPlugin,
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val emailService: EmailService,
+    private val emailSenderService: EmailSenderService,
     private val checkingPasswordRepository: CheckingPasswordRepository
-
-)
-{
+) {
 
     private val validationCodes: MutableMap<String,String> = mutableMapOf()
 
+
+
     fun login(loginRequest: LoginRequest): String? {
 
-        val user= userRepository.findByEmail(loginRequest.email) ?: throw RuntimeException("요거 따로 만들어서 관리해야함")
-        if(validationCodes.containsKey(user.email)) throw RuntimeException("이메일 인증이 되지 않았습니다")
+        val user = userRepository.findByEmail(loginRequest.email)
+            ?: throw RuntimeException("요거 따로 만들어서 관리해야함")
+        if(validationCodes.containsKey(user.email))
+            throw RuntimeException("이메일 인증이 되지 않았습니다")
 
         if(!passwordEncoder.matches(loginRequest.password,user.password)){
             throw RuntimeException("요거도 따로 만들어야함")
         }
 
-        return jwtPlugin.generateToken(subject = user.id.toString(),role=user.role, birthday = user.profile.birthday, expirationPeriod = Duration.ofHours(1), email = user.email)
+        return jwtPlugin.generateToken(
+            subject = user.id.toString(),
+            role = user.role,
+            birthday = user.profile.birthday,
+            expirationPeriod = Duration.ofHours(1),
+            email = user.email
+        )
     }
 
 
     fun signUp(signUpRequest: SignUpRequest): UserResponse? {
 
-        if(userRepository.existsByEmail(signUpRequest.email)){
+        if(userRepository.existsByEmail(signUpRequest.email))
             throw IllegalArgumentException("ID is already exists")
-        }
 
         val verificationCode = UUID.randomUUID().toString().substring(0, 6)
         val user = User(
@@ -67,19 +73,22 @@ class AuthService(
             //emailVerificationCode = verificationCode
         )
 
-        validationCodes.put(key= user.email, value = verificationCode)
+        validationCodes.put(user.email, verificationCode)
         sendAuthenticationEmail(user.email, verificationCode)
         return userRepository.save(user).toResponse()
     }
 
+
     private fun sendAuthenticationEmail(email: String, code: String) {
+
         val subject = "FC345의 프로젝트 서비스 회원가입 코드입니다"
         val text = "인증 코드: $code"
-        emailService.sendEmail(email, subject, text)
+        emailSenderService.sendEmail(email, subject, text)
     }
 
 
     fun verifyEmail(email: String, code: String): Boolean {
+
         if(!validationCodes.containsKey(key = email)) throw RuntimeException("해당 이메일로 진행된 인증 기록이 없음")
         else{
             return if (validationCodes[email]!! == code){
@@ -90,8 +99,10 @@ class AuthService(
         }
     }
 
+
     @Transactional
     fun updatePassword(request: UpdatePasswordRequest){
+
         val authentication= SecurityContextHolder.getContext().authentication
         val principal= authentication.principal as UserPrincipal
         val user= userRepository.findByEmail(principal.email)
@@ -119,9 +130,6 @@ class AuthService(
         checkingPasswordRepository.save(checkingPassword)
 
     }
-
-
-
 
 
     fun getUserByEmail(userEmail: String): User{
