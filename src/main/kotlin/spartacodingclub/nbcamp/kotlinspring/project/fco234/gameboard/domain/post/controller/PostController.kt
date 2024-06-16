@@ -3,7 +3,6 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.service.AuthService
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.CreatePostRequest
@@ -11,7 +10,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.UpdatePostRequest
 
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.service.PostService
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/api/v1/posts")

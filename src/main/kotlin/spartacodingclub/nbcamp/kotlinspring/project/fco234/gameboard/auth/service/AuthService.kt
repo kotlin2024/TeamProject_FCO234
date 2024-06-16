@@ -7,17 +7,17 @@ import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.LoginRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.SignUpRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.UpdatePasswordRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.model.CheckingPassword
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.entity.CheckingPassword
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.repository.CheckingPasswordRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.dto.UserResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.dto.response.UserResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.jwt.JwtPlugin
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.Profile
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.toResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.Profile
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.User
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.toResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.emailAuthentication.service.EmailService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.emailsender.service.EmailService
 import java.time.Duration
 import java.util.*
 

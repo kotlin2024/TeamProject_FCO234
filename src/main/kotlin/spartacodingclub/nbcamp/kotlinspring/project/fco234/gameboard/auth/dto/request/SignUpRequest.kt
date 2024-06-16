@@ -3,7 +3,7 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.r
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.aop.ValidBirthday
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.aop.ValidBirthday
 
 data class SignUpRequest(
     @field:NotBlank(message = "이메일은 필수 입력 항목입니다.")

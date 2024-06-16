@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.Instant

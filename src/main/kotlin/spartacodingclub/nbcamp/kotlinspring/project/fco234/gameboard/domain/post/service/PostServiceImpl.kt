@@ -5,17 +5,17 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.service.AuthService
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.domain.comment.repository.CommentRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.CreatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.UpdatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.model.toResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.entity.UserRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.user.repository.UserRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.exception.ModelNotFoundException
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 
 @Service
 class PostServiceImpl(
