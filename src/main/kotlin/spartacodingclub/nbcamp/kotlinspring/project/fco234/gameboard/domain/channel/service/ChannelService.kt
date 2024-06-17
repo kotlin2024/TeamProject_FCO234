@@ -12,6 +12,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.chan
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.repository.ChannelMemberPositionRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.game.service.IGDBService
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 
 @Service
@@ -19,17 +20,20 @@ class ChannelService (
 
     private val channelRepository: ChannelRepository,
     private val memberRepository: MemberRepository,
-    private val channelMemberPositionRepository: ChannelMemberPositionRepository
+    private val channelMemberPositionRepository: ChannelMemberPositionRepository,
+    private val igdbService: IGDBService
 ) {
 
     fun createChannel(
-        request: CreateChannelRequest
-    ): ChannelResponse {
-
+        request: CreateChannelRequest, accessToken:String): ChannelResponse {
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByIdOrNull(principal.id)
             ?: throw RuntimeException("User not found 요것도 예외처리 따로 해줘야함")
+
+        if(igdbService.checkGameExists(accessToken, request.gameTitle)){
+            throw IllegalStateException("IGDB에서 확인 된 게임명을 정확하게 입력해주세요")
+        }
 
         val createdChannel = Channel(
             profile = CreateChannelRequest.toProfile(request),
