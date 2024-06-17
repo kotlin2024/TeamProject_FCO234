@@ -1,12 +1,14 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.service
 
 
+import org.hibernate.annotations.Comments
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity.Comment
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.request.UpdatePasswordRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.request.UpdateProfileRequest
@@ -26,7 +28,6 @@ class MemberService (
     private val memberPasswordLogRepository: MemberPasswordLogRepository,
     private val commentRepository: CommentRepository,
     private val postRepository: PostRepository,
-    private val channelRepository: ChannelRepository
 ) {
 
     fun getUserProfile(
@@ -45,6 +46,7 @@ class MemberService (
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByIdOrNull(principal.id)
             ?: throw ModelNotFoundException("Member")
+
         return MemberResponse.from(member)
     }
 
@@ -60,7 +62,9 @@ class MemberService (
 
         targetMember.updateProfile(request)
 
-        return MemberResponse.from(memberRepository.save(targetMember))
+        return MemberResponse.from(
+            memberRepository.save(targetMember)
+        )
     }
 
 
@@ -69,12 +73,10 @@ class MemberService (
         request: UpdatePasswordRequest
     ){
 
-        val authentication= SecurityContextHolder.getContext().authentication
-        val principal= authentication.principal as UserPrincipal
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication.principal as UserPrincipal
         val targetMember = memberRepository.findByEmail(principal.email)
             ?: throw ModelNotFoundException("Member")
-
-
         val passwordLog = memberPasswordLogRepository.findByIdOrNull(targetMember!!.id)
             ?: throw ModelNotFoundException("MemberPasswordLog")
 
@@ -145,15 +147,15 @@ class MemberService (
         val targetMember = memberRepository.findByIdOrNull(memberId)
             ?: throw ModelNotFoundException("Member")
 
-        val allPosts = postRepository.findAllByAuthor(targetMember)
+        val posts = postRepository.findAllByAuthor(targetMember)
+        val comments = mutableListOf<Comment>()
+        for (each in posts)
+            comments += commentRepository.findAllByPostId(each.id!!)
 
-        for (each in allPosts) {
-            commentRepository.deleteAll(
-                commentRepository.findAllByPostId(each.id!!)
-            )
+        commentRepository.deleteAll(comments)
+        postRepository.deleteAll(posts)
 
-            postRepository.delete(each)
-        }
+        memberRepository.delete(targetMember)
     }
 
 }

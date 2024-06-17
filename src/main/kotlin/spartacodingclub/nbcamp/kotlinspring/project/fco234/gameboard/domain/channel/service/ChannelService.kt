@@ -12,8 +12,11 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.chan
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.entity.ChannelMemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.repository.ChannelMemberPositionRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity.Comment
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelAlreadyExistentException
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.game.service.IGDBService
@@ -22,15 +25,20 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.secur
 @Service
 class ChannelService (
 
-    private val channelRepository: ChannelRepository,
     private val memberRepository: MemberRepository,
     private val channelMemberPositionRepository: ChannelMemberPositionRepository,
+    private val channelRepository: ChannelRepository,
+    private val postRepository: PostRepository,
+    private val commentRepository: CommentRepository,
     private val igdbService: IGDBService
 ) {
 
     @Transactional
     fun createChannel(
-        request: CreateChannelRequest, accessToken:String): ChannelResponse {
+        request: CreateChannelRequest,
+        accessToken: String
+    ): ChannelResponse {
+
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByIdOrNull(principal.id)
@@ -49,11 +57,6 @@ class ChannelService (
         )
         channelRepository.save(createdChannel)
 
-        val channelAdmin = ChannelMemberPosition(
-            channel = createdChannel,
-            member = member
-        )
-
         channelMemberPositionRepository.save(
             ChannelMemberPosition(
                 channel = createdChannel,
@@ -67,6 +70,7 @@ class ChannelService (
 
 
     fun getAllChannels(): List<ChannelResponse> =
+
         channelRepository.findAllByStatus(ChannelStatus.OPEN)
             .map { ChannelResponse.from(it) }
 
@@ -97,13 +101,21 @@ class ChannelService (
     }
 
 
+    @Transactional
     fun deleteChannel(
         channelId: Long
     ) {
 
         val targetChannel = channelRepository.findByIdOrNull(channelId)
             ?: throw ModelNotFoundException("Channel")
+        val posts = postRepository.findAllByChannelId(channelId)
+        val comments = mutableListOf<Comment>()
 
+        for (each in posts)
+            comments += commentRepository.findAllByPostId(each.id!!)
+
+        commentRepository.deleteAll(comments)
+        postRepository.deleteAll(posts)
         channelRepository.delete(targetChannel)
     }
 
