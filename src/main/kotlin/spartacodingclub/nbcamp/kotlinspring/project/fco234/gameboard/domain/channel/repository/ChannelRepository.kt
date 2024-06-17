@@ -9,4 +9,5 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.chan
 interface ChannelRepository : JpaRepository<Channel, Long> {
 
     fun findAllByStatus(status: ChannelStatus): List<Channel>
+    fun existsByProfileGameTitle(gameTitle: String): Boolean
 }

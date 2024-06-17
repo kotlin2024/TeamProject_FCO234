@@ -26,20 +26,6 @@ class CommentService (
     private val postRepository: PostRepository
 ) {
 
-    fun getCommentsWithinPost(
-        channelId: Long,
-        postId: Long
-    ): List<CommentResponse> =
-
-        commentRepository.findAllByPostId(
-            postRepository.findByChannelIdAndId(
-                channelRepository.findByIdOrNull(channelId)?.id
-                    ?: throw ModelNotFoundException("Channel"),
-                postId)?.id
-                ?: throw ModelNotFoundException("Post"))
-            .map{ CommentResponse.from(it) }
-
-
     @Transactional
     fun createComment(
         channelId: Long,
@@ -68,6 +54,21 @@ class CommentService (
             )
         )
     }
+
+
+    fun getCommentsWithinPost(
+        channelId: Long,
+        postId: Long
+    ): List<CommentResponse> =
+
+        commentRepository.findAllByPostId(
+            postRepository.findByChannelIdAndId(
+                channelRepository.findByIdOrNull(channelId)?.id
+                    ?: throw ModelNotFoundException("Channel"),
+                postRepository.findByIdOrNull(postId)?.id
+                    ?: throw ModelNotFoundException("Post"))?.id
+            ?: throw ModelNotFoundException("Post")
+        ).map{ CommentResponse.from(it) }
 
 
     fun updateComment(
@@ -101,7 +102,7 @@ class CommentService (
         )
     }
 
-    @Transactional
+
     fun deleteComment(
         channelId: Long,
         postId: Long,
