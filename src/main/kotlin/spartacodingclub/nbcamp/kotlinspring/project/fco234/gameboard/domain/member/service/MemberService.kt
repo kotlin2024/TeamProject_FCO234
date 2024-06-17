@@ -6,12 +6,16 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.request.UpdatePasswordRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.request.UpdateProfileRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.response.MemberResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberPasswordLogRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundExceptionNew
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
 
 @Service
@@ -19,7 +23,10 @@ class MemberService (
 
     private val memberRepository: MemberRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val memberPasswordLogRepository: MemberPasswordLogRepository
+    private val memberPasswordLogRepository: MemberPasswordLogRepository,
+    private val commentRepository: CommentRepository,
+    private val postRepository: PostRepository,
+    private val channelRepository: ChannelRepository
 ) {
 
     fun getUserProfile(
@@ -27,7 +34,7 @@ class MemberService (
     ): MemberResponse {
 
         val member = memberRepository.findByIdOrNull(memberId)
-            ?:throw RuntimeException("User not found 요것도 예외처리 따로 해줘야함")
+            ?: throw ModelNotFoundException("Member")
         return MemberResponse.from(member)
     }
 
@@ -37,8 +44,7 @@ class MemberService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByIdOrNull(principal.id)
-            ?: throw RuntimeException("User not found 요것도 예외처리 따로 해줘야함")
-
+            ?: throw ModelNotFoundException("Member")
         return MemberResponse.from(member)
     }
 
@@ -50,7 +56,7 @@ class MemberService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val targetMember = memberRepository.findByIdOrNull(principal.id)
-            ?: throw RuntimeException("User not found 요것도 예외처리 따로 해줘야함")
+            ?: throw ModelNotFoundException("Member")
 
         targetMember.updateProfile(request)
 
@@ -66,11 +72,11 @@ class MemberService (
         val authentication= SecurityContextHolder.getContext().authentication
         val principal= authentication.principal as UserPrincipal
         val targetMember = memberRepository.findByEmail(principal.email)
-            ?: throw RuntimeException("User not found 요것도 예외처리 따로 해줘야함")
+            ?: throw ModelNotFoundException("Member")
 
 
         val passwordLog = memberPasswordLogRepository.findByIdOrNull(targetMember!!.id)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("MemberPasswordLog")
 
         if (passwordLog.passwords.any { passwordEncoder.matches(request.updatePassword, it) })
             throw IllegalArgumentException("사용한 마지막 3개 비밀번호는 다시 사용할 수 없습니다.")
@@ -105,6 +111,49 @@ class MemberService (
 //            oldPassword = member.password)
 //        checkingPasswordRepository.save(checkingPassword)
 
+    }
+
+    fun blockMemberInService(
+        memberId: Long
+    ) {
+
+        val targetMember = memberRepository.findByIdOrNull(memberId)
+            ?: throw ModelNotFoundException("Member")
+
+        targetMember.role = MemberPosition.BLACKLIST
+
+        memberRepository.save(targetMember)
+    }
+
+    fun unblockMemberInService(
+        memberId: Long
+    ) {
+
+        val targetMember = memberRepository.findByIdOrNull(memberId)
+            ?: throw ModelNotFoundException("Member")
+
+        targetMember.role = MemberPosition.MEMBER
+
+        memberRepository.save(targetMember)
+    }
+
+    @Transactional
+    fun deleteMember(
+        memberId: Long
+    ) {
+
+        val targetMember = memberRepository.findByIdOrNull(memberId)
+            ?: throw ModelNotFoundException("Member")
+
+        val allPosts = postRepository.findAllByAuthor(targetMember)
+
+        for (each in allPosts) {
+            commentRepository.deleteAll(
+                commentRepository.findAllByPostId(each.id!!)
+            )
+
+            postRepository.delete(each)
+        }
     }
 
 }

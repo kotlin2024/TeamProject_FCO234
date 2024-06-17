@@ -1,21 +1,19 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "member_password_log")
 class MemberPasswordLog (
 
-    @Id
     @OneToOne
     @JoinColumn(name = "member_id")
     val member: Member
 ) {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
     @Column(name = "password_a", length = 16, nullable = false)
     private var passwordA: String = ""

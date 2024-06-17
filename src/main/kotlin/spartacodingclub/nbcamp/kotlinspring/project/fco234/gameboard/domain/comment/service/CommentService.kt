@@ -11,10 +11,10 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundExceptionNew
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.UnauthorizedAccessException
 
 @Service
@@ -34,9 +34,9 @@ class CommentService (
         commentRepository.findAllByPostId(
             postRepository.findByChannelIdAndId(
                 channelRepository.findByIdOrNull(channelId)?.id
-                    ?: throw ModelNotFoundExceptionNew("Channel"),
+                    ?: throw ModelNotFoundException("Channel"),
                 postId)?.id
-                ?: throw ModelNotFoundExceptionNew("Post"))
+                ?: throw ModelNotFoundException("Post"))
             .map{ CommentResponse.from(it) }
 
 
@@ -49,14 +49,14 @@ class CommentService (
 
         val post = postRepository.findByChannelIdAndId(
             channelRepository.findByIdOrNull(channelId)?.id
-                ?: throw ModelNotFoundExceptionNew("Channel"),
+                ?: throw ModelNotFoundException("Channel"),
             postId)
-            ?: throw ModelNotFoundExceptionNew("Post")
+            ?: throw ModelNotFoundException("Post")
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByEmail(principal.email)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("Member")
 
         return CommentResponse.from(
             commentRepository.save(
@@ -77,21 +77,21 @@ class CommentService (
         request: UpdateCommentRequest
     ): CommentResponse {
 
-        val targetComment = commentRepository.findByPostIdAndId(
-            postRepository.findByChannelIdAndId(
-                channelRepository.findByIdOrNull(channelId)?.id
-                    ?: throw ModelNotFoundExceptionNew("Channel"),
-                postId)?.id
-                ?: throw ModelNotFoundExceptionNew("Post"),
-            commentId
-        ) ?: throw ModelNotFoundExceptionNew("Comment")
-
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByEmail(principal.email)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("Member")
 
-        if(targetComment.author.id != member.id  && (member.role == MemberRole.MEMBER ||(member.role== MemberRole.CHANNEL_MEMBER)))
+        val targetComment = commentRepository.findByPostIdAndId(
+            postRepository.findByChannelIdAndId(
+                channelRepository.findByIdOrNull(channelId)?.id
+                    ?: throw ModelNotFoundException("Channel"),
+                postId)?.id
+                ?: throw ModelNotFoundException("Post"),
+            commentId
+        ) ?: throw ModelNotFoundException("Comment")
+
+        if(targetComment.author.id != member.id  && (member.role == MemberPosition.MEMBER ||(member.role== MemberPosition.CHANNEL_MEMBER)))
             throw UnauthorizedAccessException()
 
         targetComment.update(request)
@@ -107,24 +107,21 @@ class CommentService (
         postId: Long,
         commentId: Long
     ) {
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication.principal as UserPrincipal
+        val member = memberRepository.findByEmail(principal.email)
+            ?: throw ModelNotFoundException("Member")
 
         val targetComment = commentRepository.findByPostIdAndId(
             postRepository.findByChannelIdAndId(
                 channelRepository.findByIdOrNull(channelId)?.id
-                    ?: throw ModelNotFoundExceptionNew("Channel"),
+                    ?: throw ModelNotFoundException("Channel"),
                 postId)?.id
-                ?: throw ModelNotFoundExceptionNew("Post"),
+                ?: throw ModelNotFoundException("Post"),
             commentId
-        ) ?: throw ModelNotFoundExceptionNew("Comment")
+        ) ?: throw ModelNotFoundException("Comment")
 
-
-        val authentication = SecurityContextHolder.getContext().authentication
-        val principal = authentication.principal as UserPrincipal
-        val member = memberRepository.findByEmail(principal.email)
-            ?: throw ModelNotFoundExceptionNew("Member")
-
-
-        if(targetComment.post.author.id != member.id && (member.role == MemberRole.MEMBER || (member.role == MemberRole.CHANNEL_MEMBER)))
+        if(targetComment.post.author.id != member.id && (member.role == MemberPosition.MEMBER || (member.role == MemberPosition.CHANNEL_MEMBER)))
             throw UnauthorizedAccessException()
 
         commentRepository.delete(targetComment)

@@ -8,7 +8,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.re
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.response.MemberResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.jwt.JwtPlugin
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberProfile
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPasswordLog
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberPasswordLogRepository
@@ -37,7 +37,7 @@ class AuthService (
     ): String? {
 
         val member = memberRepository.findByUsername(request.username)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("Member")
 
         if (!passwordEncoder.matches(request.password, member.password))
             throw IncorrectPasswordException()
@@ -73,14 +73,14 @@ class AuthService (
                 birthday = request.birthday,
                 introduction = ""
             ),
-            role = MemberRole.MEMBER,
+            role = MemberPosition.MEMBER,
         )
         val memberPasswordLog = MemberPasswordLog(
             member = member
         )
 
-        sendVerificationEmail(member.email)
         memberPasswordLogRepository.save(memberPasswordLog)
+        sendVerificationEmail(member.email)
 
         return MemberResponse.from(memberRepository.save(member))
     }
@@ -101,7 +101,7 @@ class AuthService (
     fun verifyEmail(email: String, code: String): Boolean =
 
         if (!memberRepository.existsByEmail(email))
-            throw ModelNotFoundExceptionNew("Member")
+            throw ModelNotFoundException("Member")
         else if(!validationCodes.containsKey(email))
             throw IllegalArgumentException("해당 사용자는 이미 인증되었습니다.")
         else ((validationCodes.remove(email) ?: "") == code)

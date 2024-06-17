@@ -3,6 +3,7 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.pos
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.request.CreatePostRequest
@@ -10,10 +11,10 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.response.PostResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.repository.PostRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundExceptionNew
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.UnauthorizedAccessException
 
 @Service
@@ -31,7 +32,7 @@ class PostService (
     ): PostResponse {
 
         val channel = channelRepository.findByIdOrNull(channelId)
-            ?: throw ModelNotFoundExceptionNew("Channel")
+            ?: throw ModelNotFoundException("Channel")
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
@@ -65,7 +66,7 @@ class PostService (
 
         PostResponse.from(
             postRepository.findByChannelIdAndId(channelId, postId)
-                ?: throw ModelNotFoundExceptionNew("Post")
+                ?: throw ModelNotFoundException("Post")
         )
 
 
@@ -76,14 +77,14 @@ class PostService (
     ): PostResponse {
 
         val targetPost = postRepository.findByChannelIdAndId(channelId, postId)
-            ?: throw ModelNotFoundExceptionNew("Post")
+            ?: throw ModelNotFoundException("Post")
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByEmail(principal.email)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("Member")
 
-        if (targetPost.author.id != member.id && (member.role == MemberRole.MEMBER || (member.role == MemberRole.CHANNEL_MEMBER)))
+        if (targetPost.author.id != member.id && (member.role == MemberPosition.MEMBER || (member.role == MemberPosition.CHANNEL_MEMBER)))
             throw UnauthorizedAccessException()
 
         targetPost.update(request)
@@ -92,23 +93,29 @@ class PostService (
     }
 
 
+    @Transactional
     fun deletePost(
         channelId: Long,
         postId: Long
     ) {
 
-        val targetPost = postRepository.findByChannelIdAndId(channelId, postId)
-            ?: throw ModelNotFoundExceptionNew("Post")
-
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByEmail(principal.email)
-            ?: throw ModelNotFoundExceptionNew("Member")
+            ?: throw ModelNotFoundException("Member")
 
-        if(targetPost.author.id != member.id && (member.role == MemberRole.MEMBER || (member.role == MemberRole.CHANNEL_MEMBER)))
+        val relatedComments = commentRepository.findAllByPostId(postId)
+        val targetPost = postRepository.findByChannelIdAndId(
+            channelRepository.findByIdOrNull(channelId)?.id
+                ?: throw ModelNotFoundException("Channel"),
+            postRepository.findByIdOrNull(postId)?.id
+                ?: throw ModelNotFoundException("Post")
+        ) ?: throw ModelNotFoundException("Post")
+
+        if(targetPost.author.id != member.id && (member.role == MemberPosition.MEMBER || (member.role == MemberPosition.CHANNEL_MEMBER)))
             throw UnauthorizedAccessException()
 
-        commentRepository.deleteAll(commentRepository.findAllByPostId(postId))
+        commentRepository.deleteAll(relatedComments)
         postRepository.delete(targetPost)
     }
 

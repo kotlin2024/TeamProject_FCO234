@@ -12,7 +12,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.comm
 
 @Entity
 @Table(name = "post")
-@EntityListeners(AuditingEntityListener::class)
 class Post (
 
     @Column(name = "title", nullable = false)
@@ -22,7 +21,7 @@ class Post (
     var content: String,
 
     @ManyToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     val author: Member,
 
     @ManyToOne

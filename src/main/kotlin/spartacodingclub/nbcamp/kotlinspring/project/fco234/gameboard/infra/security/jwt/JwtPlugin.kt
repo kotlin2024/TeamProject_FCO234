@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
 import java.nio.charset.StandardCharsets
 import java.time.Duration
 import java.time.Instant
@@ -38,7 +38,7 @@ class JwtPlugin (
 
      fun generateToken(
          subject: String,
-         role: MemberRole,
+         role: MemberPosition,
          birthday: String,
          expirationPeriod: Duration,
          email: String

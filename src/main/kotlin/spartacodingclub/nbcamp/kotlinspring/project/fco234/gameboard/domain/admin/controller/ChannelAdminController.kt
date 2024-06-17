@@ -2,122 +2,120 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.adm
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.response.ChannelResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.dto.request.CreateChannelRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.request.UpdateChannelRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.admin.dto.request.WarnChannelRequest
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.dto.request.UpdateChannelRequest
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.dto.response.ChannelMemberPositionResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.dto.response.ChannelResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.service.ChannelService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.service.ChannelMemberPositionService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.service.CommentService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.response.MemberResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.service.PostService
 
-@PreAuthorize("hasRole('ADMIN')")
 @RestController
-@RequestMapping("/api/admin/channels")
+@RequestMapping("/api/v1/channel-admmin/channels/{channelId}")
 class ChannelAdminController (
 
-    private val channelService: ChannelService
+    private val channelMemberPositionService: ChannelMemberPositionService,
+    private val channelService: ChannelService,
+    private val postService: PostService,
+    private val commentService: CommentService
 ) {
 
-    @GetMapping("/{channelid}")
-    fun getChannel(
-        @PathVariable channelid: Long,
-    ): ResponseEntity<ChannelResponse> =
+    @GetMapping("/members")
+    fun getChannelMembers(
+        @PathVariable channelId: Long
+    ): ResponseEntity<List<MemberResponse>> =
 
         ResponseEntity
             .status(HttpStatus.OK)
-            .body(channelService.getChannel(channelid))
+            .body(channelMemberPositionService.getChannelMembers(channelId))
 
 
-    @GetMapping
-    fun getAllChannels():
-            ResponseEntity<List<ChannelResponse>> =
+    @PutMapping("/assign-manager")
+    fun assignChannelmanager(
+        @PathVariable channelId: Long,
+        @RequestParam(name = "member_id") memberId: Long
+    ): ResponseEntity<ChannelMemberPositionResponse> =
 
         ResponseEntity
             .status(HttpStatus.OK)
-            .body(channelService.getAllChannels())
+            .body(channelMemberPositionService.assignChannelManager(channelId, memberId))
 
 
-
-    @PostMapping
-    fun createChannel(
-        @RequestBody request: CreateChannelRequest
-    ): ResponseEntity<ChannelResponse> =
+    @PutMapping("/accept-member")
+    fun acceptMember(
+        @PathVariable channelId: Long,
+        @RequestParam(name = "member_id") memberId: Long
+    ): ResponseEntity<ChannelMemberPositionResponse> =
 
         ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(channelService.createChannel(request))
+            .status(HttpStatus.OK)
+            .body(channelMemberPositionService.acceptMember(channelId, memberId))
 
 
+    @PutMapping("/block-member")
+    fun blockMember(
+        @PathVariable channelId: Long,
+        @RequestParam(name = "member_id") memberId: Long
+    ): ResponseEntity<ChannelMemberPositionResponse> =
 
-    @PutMapping("/{channelid}")
-    fun updateChannel(
-        @PathVariable channelid: Long,
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(channelMemberPositionService.blockMember(channelId, memberId))
+
+    @PutMapping("/unblock-member")
+    fun unblockMember(
+        @PathVariable channelId: Long,
+        @RequestParam(name = "member_id") memberId: Long
+    ): ResponseEntity<ChannelMemberPositionResponse> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(channelMemberPositionService.acceptMember(channelId, memberId))
+
+
+    @DeleteMapping("/posts/{postId}")
+    fun deletePost(
+        @PathVariable channelId: Long,
+        @PathVariable postId: Long
+    ): ResponseEntity<Unit> =
+
+        ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .body(postService.deletePost(channelId, postId))
+
+
+    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    fun deleteComment(
+        @PathVariable channelId: Long,
+        @PathVariable postId: Long,
+        @PathVariable commentId: Long
+    ): ResponseEntity<Unit> =
+
+        ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .body(commentService.deleteComment(channelId, postId, commentId))
+
+
+    @PutMapping
+    fun updateChannelProfile(
+        @PathVariable channelId: Long,
         @RequestBody request: UpdateChannelRequest
     ): ResponseEntity<ChannelResponse> =
 
         ResponseEntity
             .status(HttpStatus.OK)
-            .body(channelService.updateChannel(channelid, request))
+            .body(channelService.updateChannel(channelId, request))
 
 
-
-    @DeleteMapping("/{channelid}")
+    @DeleteMapping
     fun deleteChannel(
-        @PathVariable channelid: Long
-    ): ResponseEntity<Unit> {
-
-        channelService.deleteChannel(channelid)
-        return ResponseEntity
-            .status(HttpStatus.NO_CONTENT)
-            .build()
-    }
-
-
-    @PostMapping("/{channelId}/warn")
-    fun warnChannel(
-        @PathVariable channelId: Long,
-        @RequestBody request: WarnChannelRequest
-    ): ResponseEntity<String> =
+        @PathVariable channelId: Long
+    ): ResponseEntity<Unit> =
 
         ResponseEntity
-            .status(HttpStatus.OK)
-            .body(channelService.warnChannel(channelId,request))
-
-
-    @PatchMapping("/{channelId}/activate")
-    fun activateChannel(
-        @PathVariable channelId: Long
-    ): ResponseEntity<Unit> {
-
-        channelService.activateChannel(channelId)
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .build()
-    }
-
-
-    @PatchMapping("/{channelId}/deactivate")
-    fun deactivateChannel(
-        @PathVariable channelId: Long
-    ): ResponseEntity<Unit> {
-
-        channelService.deactivateChannel(channelId)
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .build()
-    }
-
-
-
-    @PostMapping("/{channelId}/assign-manager/{userId}")
-    fun assignManager(
-        @PathVariable channelId: Long,
-        @PathVariable userId: Long
-    ): ResponseEntity<String> {
-
-        channelService.assignManager(channelId, userId)
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body("Manager assigned successfully")
-    }
+            .status(HttpStatus.NO_CONTENT)
+            .body(channelService.deleteChannel(channelId))
 
 }
