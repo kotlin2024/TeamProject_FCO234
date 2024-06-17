@@ -37,7 +37,7 @@ class Post (
     val time: ModelTime = ModelTime()
 
 
-    fun update(request: UpdatePostRequest) {
+    fun updateFrom(request: UpdatePostRequest) {
         title = request.title
         content = request.content
 
