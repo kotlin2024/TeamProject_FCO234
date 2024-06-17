@@ -9,7 +9,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.memb
 @Embeddable
 data class MemberProfile (
 
-
     @Column(name = "nickname", nullable = false)
     var nickname: String,
 

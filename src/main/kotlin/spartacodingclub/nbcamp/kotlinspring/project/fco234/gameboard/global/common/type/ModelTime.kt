@@ -9,10 +9,10 @@ import java.time.ZonedDateTime
 class ModelTime (
 
     @Column(nullable = false, updatable = false)
-    val createdAt: ZonedDateTime? = ZonedDateTime.now(),
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
     @Column(nullable = true)
-    var updatedAt: ZonedDateTime? = ZonedDateTime.now()
+    var updatedAt: ZonedDateTime = ZonedDateTime.now()
 ) {
 
     fun update() {
