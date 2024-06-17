@@ -10,36 +10,39 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.service.CommentService
 
 @RestController
-@RequestMapping("/api/v1/posts/{postId}/comments")
+@RequestMapping("/api/v1/channels/{channelId}/posts/{postId}/comments")
 class CommentController (
     private val commentService: CommentService
 ) {
 
-    @GetMapping("/get")
-    fun getComment(
-        @PathVariable postId: Long
-    ): ResponseEntity<List<CommentResponse>> =
-
-        ResponseEntity
-            .status(HttpStatus.OK)
-            .body(commentService.getComment(postId))
-
-
-    @PreAuthorize("hasRole('PLATFORM_USER')")
-    @PostMapping()
+//    @PreAuthorize("hasRole('PLATFORM_USER')")
+    @PostMapping
     fun createComment(
+        @PathVariable channelId: Long,
         @PathVariable postId: Long,
         @RequestBody request: CreateCommentRequest
     ): ResponseEntity<CommentResponse> =
 
         ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(commentService.createComment(postId, request))
+            .body(commentService.createComment(channelId, postId, request))
 
 
-    @PreAuthorize("hasRole('PLATFORM_USER')")
+    @GetMapping
+    fun getCommentsWithinPost(
+        @PathVariable channelId: Long,
+        @PathVariable postId: Long
+    ): ResponseEntity<List<CommentResponse>> =
+
+        ResponseEntity
+            .status(HttpStatus.OK)
+            .body(commentService.getCommentsWithinPost(channelId, postId))
+
+
+//    @PreAuthorize("hasRole('PLATFORM_USER')")
     @PutMapping("/{commentId}")
     fun updateComment(
+        @PathVariable channelId: Long,
         @PathVariable postId: Long,
         @PathVariable commentId: Long,
         @RequestBody request: UpdateCommentRequest
@@ -47,20 +50,19 @@ class CommentController (
 
         ResponseEntity
             .status(HttpStatus.OK)
-            .body(commentService.updateComment(postId, commentId, request))
+            .body(commentService.updateComment(channelId, postId, commentId, request))
 
 
-    @PreAuthorize("hasRole('PLATFORM_USER')")
+//    @PreAuthorize("hasRole('PLATFORM_USER')")
     @DeleteMapping("/{commentId}")
     fun deleteComment(
+        @PathVariable channelId: Long,
         @PathVariable postId: Long,
         @PathVariable commentId: Long
-    ): ResponseEntity<Unit> {
+    ): ResponseEntity<Unit> =
 
-        commentService.deleteComment(postId, commentId,)
-        return ResponseEntity
+        ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .build()
-    }
+            .body(commentService.deleteComment(channelId, postId, commentId))
 
 }

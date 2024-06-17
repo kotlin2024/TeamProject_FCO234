@@ -8,5 +8,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 interface CommentRepository: JpaRepository<Comment, Long> {
 
     fun findAllByPostId(postId: Long): List<Comment>
+    fun findByPostIdAndId(postId: Long, id: Long): Comment?
 
 }

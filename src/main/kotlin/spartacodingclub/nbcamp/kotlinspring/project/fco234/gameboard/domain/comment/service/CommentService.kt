@@ -1,4 +1,4 @@
-package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity
+package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.service
 
 import org.springframework.data.repository.findByIdOrNull
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
@@ -8,99 +8,126 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comm
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.dto.request.CreateCommentRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.dto.request.UpdateCommentRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity.Comment
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity.toResponse
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberRole
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundException
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.ModelNotFoundExceptionNew
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.UnauthorizedAccessException
 
 @Service
 class CommentService (
-    private val commentRepository: CommentRepository,
-    private val postRepository: PostRepository,
-    private val memberRepository: MemberRepository
 
+    private val channelRepository: ChannelRepository,
+    private val memberRepository: MemberRepository,
+    private val commentRepository: CommentRepository,
+    private val postRepository: PostRepository
 ) {
 
-    fun getComment(
+    fun getCommentsWithinPost(
+        channelId: Long,
         postId: Long
-    ): List<CommentResponse>{
+    ): List<CommentResponse> =
 
-        if(!postRepository.existsById(postId)) throw ModelNotFoundException("Post", postId)
-        return commentRepository.findAllByPostId(postId).map{ it.toResponse()}
-    }
+        commentRepository.findAllByPostId(
+            postRepository.findByChannelIdAndId(
+                channelRepository.findByIdOrNull(channelId)?.id
+                    ?: throw ModelNotFoundExceptionNew("Channel"),
+                postId)?.id
+                ?: throw ModelNotFoundExceptionNew("Post"))
+            .map{ CommentResponse.from(it) }
 
 
     @Transactional
     fun createComment(
+        channelId: Long,
         postId: Long,
         createCommentRequest: CreateCommentRequest
     ): CommentResponse {
-        val post = postRepository.findByIdOrNull(postId)
-            ?: throw ModelNotFoundException("Post", postId)
-//        val comment= commentRepository.findByIdOrNull(postId) ?: throw RuntimeException("몰라")
+
+        val post = postRepository.findByChannelIdAndId(
+            channelRepository.findByIdOrNull(channelId)?.id
+                ?: throw ModelNotFoundExceptionNew("Channel"),
+            postId)
+            ?: throw ModelNotFoundExceptionNew("Post")
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
+        val member = memberRepository.findByEmail(principal.email)
+            ?: throw ModelNotFoundExceptionNew("Member")
 
-        val user = memberRepository.findByEmail(principal.email)
-            ?: throw RuntimeException("너 누구야")
-
-
-
-        return commentRepository.save(
-            Comment(
-            content = createCommentRequest.content,
-            post = post,
-            member = user,
+        return CommentResponse.from(
+            commentRepository.save(
+                Comment(
+                    content = createCommentRequest.content,
+                    post = post,
+                    author = member,
+                    )
+            )
         )
-        ).toResponse()
     }
 
 
-    @Transactional
-    fun updateComment(postId:Long, commentId:Long, updateCommentRequest: UpdateCommentRequest): CommentResponse {
-        postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
+    fun updateComment(
+        channelId: Long,
+        postId: Long,
+        commentId: Long,
+        request: UpdateCommentRequest
+    ): CommentResponse {
+
+        val targetComment = commentRepository.findByPostIdAndId(
+            postRepository.findByChannelIdAndId(
+                channelRepository.findByIdOrNull(channelId)?.id
+                    ?: throw ModelNotFoundExceptionNew("Channel"),
+                postId)?.id
+                ?: throw ModelNotFoundExceptionNew("Post"),
+            commentId
+        ) ?: throw ModelNotFoundExceptionNew("Comment")
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
+        val member = memberRepository.findByEmail(principal.email)
+            ?: throw ModelNotFoundExceptionNew("Member")
 
+        if(targetComment.author.id != member.id  && (member.role == MemberRole.MEMBER ||(member.role== MemberRole.CHANNEL_MEMBER)))
+            throw UnauthorizedAccessException()
 
-        val user = memberRepository.findByEmail(principal.email)
-            ?: throw RuntimeException("User not found")
+        targetComment.update(request)
 
-        if(comment.post.member!!.id !=user.id  && (user.role == MemberRole.PLATFORM_USER ||(user.role== MemberRole.CHANNEL_USER )) ) throw RuntimeException("작성한 본인만 수정 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
-
-
-
-
-        comment.content = updateCommentRequest.content
-        return commentRepository.save(comment).toResponse()
-
+        return CommentResponse.from(
+            commentRepository.save(targetComment)
+        )
     }
 
     @Transactional
-    fun deleteComment(postId: Long,commentId: Long){
-        postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
-        val comment = commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("Comment", commentId)
+    fun deleteComment(
+        channelId: Long,
+        postId: Long,
+        commentId: Long
+    ) {
+
+        val targetComment = commentRepository.findByPostIdAndId(
+            postRepository.findByChannelIdAndId(
+                channelRepository.findByIdOrNull(channelId)?.id
+                    ?: throw ModelNotFoundExceptionNew("Channel"),
+                postId)?.id
+                ?: throw ModelNotFoundExceptionNew("Post"),
+            commentId
+        ) ?: throw ModelNotFoundExceptionNew("Comment")
+
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
+        val member = memberRepository.findByEmail(principal.email)
+            ?: throw ModelNotFoundExceptionNew("Member")
 
 
-        val user = memberRepository.findByEmail(principal.email)
-            ?: throw RuntimeException("User not found")
+        if(targetComment.post.author.id != member.id && (member.role == MemberRole.MEMBER || (member.role == MemberRole.CHANNEL_MEMBER)))
+            throw UnauthorizedAccessException()
 
-
-        if(comment.post.member!!.id !=user.id && (user.role == MemberRole.PLATFORM_USER ||(user.role== MemberRole.CHANNEL_USER ))) throw RuntimeException("작성한 본인만 삭제 가능함!!!!!!! 요것도 예외처리 추가 필요함~!~!~!~!~")
-
-
-        commentRepository.delete(comment)
+        commentRepository.delete(targetComment)
     }
-
 
 }
-

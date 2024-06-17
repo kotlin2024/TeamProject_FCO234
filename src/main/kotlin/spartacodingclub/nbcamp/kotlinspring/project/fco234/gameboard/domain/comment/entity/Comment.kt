@@ -1,43 +1,41 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.entity
 
 import jakarta.persistence.*
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.Post
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.dto.request.UpdateCommentRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.dto.response.CommentResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.BaseTime
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.entity.Post
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.common.type.ModelTime
 
 @Entity
 @Table(name = "comment")
-@EntityListeners(AuditingEntityListener::class)
 class Comment (
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userId", nullable=false)
-    val member :Member,
+    @Column(name = "content")
+    var content: String,
 
-    @Column(name="content")
-    var content:String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="cardId", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    val author: Member,
+
+    @ManyToOne
+    @JoinColumn(name ="post_id", nullable = false)
     val post: Post
 
-) : BaseTime() {
+) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
+    @Embedded
+    val time: ModelTime = ModelTime()
+
+
+    fun update(request: UpdateCommentRequest) {
+        content = request.content
+        time.update()
+    }
+
 }
-
-
-fun Comment.toResponse() =
-
-    CommentResponse(
-        id = id!!,
-        postId = post.id!!,
-        content= content,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-    )
