@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.repository.ChannelRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.repository.ChannelMemberPositionRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.repository.CommentRepository
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.request.CreatePostRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.dto.request.UpdatePostRequest
@@ -23,7 +24,8 @@ class PostService (
     private val postRepository: PostRepository,
     private val channelRepository: ChannelRepository,
     private val memberRepository: MemberRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val channelMemberPositionRepository: ChannelMemberPositionRepository
 ) {
 
     fun createPost(
@@ -38,6 +40,9 @@ class PostService (
 
         val channel = channelRepository.findByIdOrNull(channelId)
             ?: throw ModelNotFoundException("Channel")
+
+        if (!channelMemberPositionRepository.existsByChannelIdAndMemberId(channelId, principal.id))
+            throw UnauthorizedAccessException()
 
         return PostResponse.from(
             postRepository.save(
