@@ -3,5 +3,6 @@ package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.mem
 enum class MemberRole {
 
     ADMIN,
-    MEMBER
+    MEMBER,
+    CHANNEL_MEMBER
 }
