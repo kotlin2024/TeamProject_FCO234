@@ -13,7 +13,7 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.memb
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.service.PostService
 
 @RestController
-@RequestMapping("/api/v1/channel-admmin/channels/{channelId}")
+@RequestMapping("/api/v1/channel-admin/channels/{channelId}")
 class ChannelAdminController (
 
     private val channelMemberPositionService: ChannelMemberPositionService,
