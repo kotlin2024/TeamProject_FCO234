@@ -15,15 +15,15 @@ class ChannelMemberPosition (
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    val member: Member
+    val member: Member,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "position")
+    var position: MemberPosition = MemberPosition.MEMBER
 ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "position")
-    var position: MemberPosition = MemberPosition.MEMBER
 
 }

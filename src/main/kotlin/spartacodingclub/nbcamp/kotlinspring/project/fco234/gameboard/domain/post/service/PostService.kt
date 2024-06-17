@@ -37,7 +37,7 @@ class PostService (
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
         val member = memberRepository.findByEmail(principal.email)
-            ?: throw RuntimeException("너 누구야")
+            ?: throw ModelNotFoundException("Member")
 
         val createdPost = Post(
             title = createPostRequest.title,
