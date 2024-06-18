@@ -1,133 +1,109 @@
 package spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.service
 
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.LoginRequest
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.SignUpRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.dto.request.UpdatePasswordRequest
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.model.CheckingPassword
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.auth.repository.CheckingPasswordRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.dto.UserResponse
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.response.MemberResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.jwt.JwtPlugin
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.Profile
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.UserRole
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.User
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.model.toResponse
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.users.repository.UserRepository
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.UserPrincipal
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.security.emailAuthentication.service.EmailService
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberProfile
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPosition
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.Member
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.entity.MemberPasswordLog
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberPasswordLogRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.repository.MemberRepository
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.global.exception.type.*
+import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.infra.emailsender.service.EmailSenderService
 import java.time.Duration
 import java.util.*
 
-
 @Service
-class AuthService(
-    private val jwtPlugin: JwtPlugin,
-    private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val emailService: EmailService,
-    private val checkingPasswordRepository: CheckingPasswordRepository
+class AuthService (
 
-)
-{
+    private val jwtPlugin: JwtPlugin,
+    private val memberRepository: MemberRepository,
+    private val memberPasswordLogRepository: MemberPasswordLogRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val emailSenderService: EmailSenderService,
+) {
 
     private val validationCodes: MutableMap<String,String> = mutableMapOf()
 
-    fun login(loginRequest: LoginRequest): String? {
-
-        val user= userRepository.findByEmail(loginRequest.email) ?: throw RuntimeException("요거 따로 만들어서 관리해야함")
-        if(validationCodes.containsKey(user.email)) throw RuntimeException("이메일 인증이 되지 않았습니다")
-
-        if(!passwordEncoder.matches(loginRequest.password,user.password)){
-            throw RuntimeException("요거도 따로 만들어야함")
-        }
-
-        return jwtPlugin.generateToken(subject = user.id.toString(),role=user.role, birthday = user.profile.birthday, expirationPeriod = Duration.ofHours(1), email = user.email)
-    }
 
 
-    fun signUp(signUpRequest: SignUpRequest): UserResponse? {
+    fun login(
+        request: LoginRequest
+    ): String? {
 
-        if(userRepository.existsByEmail(signUpRequest.email)){
-            throw IllegalArgumentException("ID is already exists")
-        }
+        val member = memberRepository.findByUsername(request.username)
+            ?: throw ModelNotFoundException("Member")
 
-        val verificationCode = UUID.randomUUID().toString().substring(0, 6)
-        val user = User(
-            email = signUpRequest.email,
-            password = passwordEncoder.encode(signUpRequest.password),
-            profile = Profile(
-                name = signUpRequest.name,
-                birthday = signUpRequest.birthday
-            ),
-            role = UserRole.PLATFORM_USER,
-            introduce = null
-            //emailVerificationCode = verificationCode
+        if (!passwordEncoder.matches(request.password, member.password))
+            throw IncorrectPasswordException()
+        if (validationCodes.containsKey(member.email))
+            throw MemberNotVerifiedException()
+
+        return jwtPlugin.generateToken(
+            subject = member.id.toString(),
+            role = member.role,
+            birthday = member.profile.birthday,
+            expirationPeriod = Duration.ofHours(1),
+            email = member.email
         )
-
-        validationCodes.put(key= user.email, value = verificationCode)
-        sendAuthenticationEmail(user.email, verificationCode)
-        return userRepository.save(user).toResponse()
     }
 
-    private fun sendAuthenticationEmail(email: String, code: String) {
-        val subject = "FC345의 프로젝트 서비스 회원가입 코드입니다"
-        val text = "인증 코드: $code"
-        emailService.sendEmail(email, subject, text)
-    }
-
-
-    fun verifyEmail(email: String, code: String): Boolean {
-        if(!validationCodes.containsKey(key = email)) throw RuntimeException("해당 이메일로 진행된 인증 기록이 없음")
-        else{
-            return if (validationCodes[email]!! == code){
-                validationCodes.remove(email)
-                true
-            }
-            else false
-        }
-    }
 
     @Transactional
-    fun updatePassword(request: UpdatePasswordRequest){
-        val authentication= SecurityContextHolder.getContext().authentication
-        val principal= authentication.principal as UserPrincipal
-        val user= userRepository.findByEmail(principal.email)
+    fun signUp(
+        request: SignUpRequest
+    ): MemberResponse? {
 
-        if(passwordEncoder.matches(request.updatePassword,user!!.password)) throw RuntimeException("변경하려는 비밀번호와 현재 비밀번호가 똑같음!!!")
-        // 최대 3번 이내의 비밀번호를 저장하는 로직이 필요함
-        val recentPasswords = checkingPasswordRepository.findTop3ByEmailOrderByIdDesc(user.email)
-        if (recentPasswords.any { checkingPassword:CheckingPassword -> passwordEncoder.matches(request.updatePassword, checkingPassword.oldPassword) }) {
-            throw RuntimeException("최근 3번 이내에 사용한 비밀번호는 사용할 수 없습니다.")
-        }
+        if(memberRepository.existsByEmail(request.email))
+            throw EmailAlreadyOccupiedException()
+        if(memberRepository.existsByUsername(request.username))
+            throw UsernameAlreadyOccupiedException()
 
-        user.password = passwordEncoder.encode(request.updatePassword)
-        userRepository.save(user)
+        val member = Member(
+            email = request.email,
+            username = request.username,
+            password = passwordEncoder.encode(request.password),
+            profile = MemberProfile(
+                nickname = request.nickname,
+                birthday = request.birthday,
+                introduction = ""
+            ),
+            role = MemberPosition.MEMBER,
+        )
+        val memberPasswordLog = MemberPasswordLog(
+            member = member
+        )
 
-        if (recentPasswords.size >= 3) {
-            val oldestPasswordId = recentPasswords.minByOrNull { it.id!! }!!.id!!// 가장 오래된 비밀번호 찾기
+        memberPasswordLogRepository.save(memberPasswordLog)
+        sendVerificationEmail(member.email)
 
-                checkingPasswordRepository.deleteByEmailAndIdLessThanEqualOrderByOldPasswordAsc(user.email, oldestPasswordId)
-        }
-
-
-        val checkingPassword =CheckingPassword(
-            email = user.email,
-            oldPassword = user.password)
-        checkingPasswordRepository.save(checkingPassword)
-
+        return MemberResponse.from(memberRepository.save(member))
     }
 
 
+    private fun sendVerificationEmail(email: String) {
 
+        val verificationCode = UUID.randomUUID().toString().substring(0, 6)
+        validationCodes.put(email, verificationCode)
 
+        val subject = "FC345의 프로젝트 서비스 회원가입 코드입니다"
+        val text = "인증 코드: $verificationCode"
 
-    fun getUserByEmail(userEmail: String): User{
-
-        val usersEmail =userRepository.findByEmail(userEmail) ?: throw IllegalArgumentException("해당 이메일이 없음")
-        return usersEmail
+        emailSenderService.sendEmail(email, subject, text)
     }
+
+
+    fun verifyEmail(email: String, code: String): Boolean =
+
+        if (!memberRepository.existsByEmail(email))
+            throw ModelNotFoundException("Member")
+        else if(!validationCodes.containsKey(email))
+            throw IllegalArgumentException("해당 사용자는 이미 인증되었습니다.")
+        else ((validationCodes.remove(email) ?: "") == code)
 
 }
