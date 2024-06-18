@@ -91,27 +91,6 @@ class MemberService (
         memberPasswordLogRepository.save(passwordLog)
         memberRepository.save(targetMember)
 
-//        if(passwordEncoder.matches(request.updatePassword,member!!.password)) throw RuntimeException("변경하려는 비밀번호와 현재 비밀번호가 똑같음!!!")
-//        // 최대 3번 이내의 비밀번호를 저장하는 로직이 필요함
-//        val recentPasswords = checkingPasswordRepository.findTop3ByEmailOrderByIdDesc(member.email)
-//        if (recentPasswords.any { checkingPassword: CheckingPassword -> passwordEncoder.matches(request.updatePassword, checkingPassword.oldPassword) }) {
-//            throw RuntimeException("최근 3번 이내에 사용한 비밀번호는 사용할 수 없습니다.")
-//        }
-//
-//        member.password = passwordEncoder.encode(request.updatePassword)
-//        memberRepository.save(member)
-//
-//        if (recentPasswords.size >= 3) {
-//            val oldestPasswordId = recentPasswords.minByOrNull { it.id!! }!!.id!!// 가장 오래된 비밀번호 찾기
-//
-//            checkingPasswordRepository.deleteByEmailAndIdLessThanEqualOrderByOldPasswordAsc(member.email, oldestPasswordId)
-//        }
-//
-//
-//        val checkingPassword = CheckingPassword(
-//            email = member.email,
-//            oldPassword = member.password)
-//        checkingPasswordRepository.save(checkingPassword)
 
     }
 

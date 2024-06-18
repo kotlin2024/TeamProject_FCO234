@@ -45,14 +45,14 @@ class JwtAuthenticationFilter (
                     )
                     val authentication = JwtAuthenticationToken(
                         principal = principal,
-                        details = WebAuthenticationDetailsSource().buildDetails(request) // request에서 ip주소와 세션ID를 추출해서 WebAuthenticationDetails 객체를 생성
+                        details = WebAuthenticationDetailsSource().buildDetails(request)
                     )
 
                     SecurityContextHolder.getContext().authentication = authentication
                 }
         }
 
-        filterChain.doFilter(request, response) // 현재 필터 끝내고 다음필터로 진행시켜!
+        filterChain.doFilter(request, response)
     }
 
 

@@ -9,7 +9,6 @@ import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.chan
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channel.service.ChannelService
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.channelmemberposition.service.ChannelMemberPositionService
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.comment.service.CommentService
-import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.member.dto.response.MemberResponse
 import spartacodingclub.nbcamp.kotlinspring.project.fco234.gameboard.domain.post.service.PostService
 
 @RestController

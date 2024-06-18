@@ -25,8 +25,8 @@ class Post (
     val author: Member,
 
     @ManyToOne
-    @JoinColumn(name = "channel_id") // 채널의 ID만 저장할 컬럼
-    val channel: Channel // 채널의 ID를 저장할 변수
+    @JoinColumn(name = "channel_id")
+    val channel: Channel
 ) {
 
     @Id

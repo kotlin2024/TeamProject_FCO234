@@ -27,41 +27,6 @@ class OauthController(
 
 
 
-//    @GetMapping("/login")
-//    fun login(): RedirectView {
-//        val url = "$authUrl?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=user:read:email"
-//        return RedirectView(url)
-//    }
-//
-//
-//    @GetMapping("/auth/callback")
-//    fun authCallback(@RequestParam code: String): ResponseEntity<Map<String, String>> {
-//        println("Authorization code: $code")
-//
-//        val headers = HttpHeaders().apply {
-//            contentType = MediaType.APPLICATION_FORM_URLENCODED
-//        }
-//
-//        val body = LinkedMultiValueMap<String, String>().apply {
-//            add("client_id", clientId)
-//            add("client_secret", clientSecret)
-//            add("code", code)
-//            add("grant_type", "authorization_code")
-//            add("redirect_uri", redirectUri)
-//        }
-//
-//        val entity = HttpEntity(body, headers)
-//
-//        return try {
-//            val response = restTemplate.postForObject(tokenUrl, entity, Map::class.java)
-//            val accessToken = response?.get("access_token") as String
-//            println("Access token: $accessToken")
-//            ResponseEntity.ok(mapOf("access_token" to accessToken))
-//        } catch (e: HttpClientErrorException) {
-//            println("Error: ${e.statusCode} - ${e.responseBodyAsString}")
-//            ResponseEntity.status(e.statusCode).body(mapOf("error" to e.responseBodyAsString))
-//        }
-//    }
 
     @PostMapping("/get-token")
     fun getAccessToken(): ResponseEntity<String>{

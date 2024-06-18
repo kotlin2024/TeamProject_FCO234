@@ -25,7 +25,7 @@ class MemberController (
             .body(memberService.getUserProfile(userId))
 
 
-    @GetMapping("/my_profile") //사실 USERiD 필요없긴함
+    @GetMapping("/my_profile")
     fun getMyProfile(): ResponseEntity<MemberResponse> =
 
         ResponseEntity
