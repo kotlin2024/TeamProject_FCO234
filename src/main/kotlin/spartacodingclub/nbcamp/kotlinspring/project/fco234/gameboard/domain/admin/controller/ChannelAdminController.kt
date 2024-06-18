@@ -25,7 +25,7 @@ class ChannelAdminController (
     @GetMapping("/members")
     fun getChannelMembers(
         @PathVariable channelId: Long
-    ): ResponseEntity<List<MemberResponse>> =
+    ): ResponseEntity<List<ChannelMemberPositionResponse>> =
 
         ResponseEntity
             .status(HttpStatus.OK)

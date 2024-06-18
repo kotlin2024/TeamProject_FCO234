@@ -50,7 +50,7 @@ class ChannelMemberPositionService (
 
     fun getChannelMembers(
         channelId: Long
-    ): List<MemberResponse> {
+    ): List<ChannelMemberPositionResponse> {
 
         val authentication = SecurityContextHolder.getContext().authentication
         val principal = authentication.principal as UserPrincipal
@@ -60,7 +60,7 @@ class ChannelMemberPositionService (
         return channelMemberPositionRepository.findAllByChannelId(
             channelRepository.findByIdOrNull(channelId)?.id
                 ?: throw ModelNotFoundException("Channel")
-        ).map { MemberResponse.from(it.member) }
+        ).map { ChannelMemberPositionResponse.from(it) }
     }
 
 
