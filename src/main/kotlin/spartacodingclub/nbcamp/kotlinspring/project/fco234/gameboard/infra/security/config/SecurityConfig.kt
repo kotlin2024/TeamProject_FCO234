@@ -36,7 +36,7 @@ class SecurityConfig (
                     "/api/v1/posts/get/**",
                     "/api/v1/posts/{postId}/comments/get/**",
                     "/admin/**",
-                    "/api/v1/members/profile/**", //해당부분은 테스트용으로 작성한 것이며 추후에 해당ㅂ분을 삭제하고 프로필 컨트롤러에  preAuthorize를 넣어야함
+                    "/api/v1/members/profile/**",
                     "/api/v1/members/update-password",
                     "/error"
                 ).permitAll()
@@ -44,7 +44,7 @@ class SecurityConfig (
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling{
-                it.authenticationEntryPoint(authenticationEntryPoint) //예외처리들
+                it.authenticationEntryPoint(authenticationEntryPoint)
                 it.accessDeniedHandler(accessDeniedHandler)
             }
             .build()

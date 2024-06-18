@@ -25,11 +25,6 @@ class IGDBController(
         oauthController.getAccessToken()
     }
 
-//    @PostMapping("/check-game")
-//    fun isGameExists(@RequestBody gameName:String): Boolean{
-//        val accessToken = accessTokenHolder.accessToken ?: throw IllegalStateException("Access token is not available")
-//        return igdbService.checkGameExists(accessToken, gameName)
-//    }
 
     @PostMapping("/games")
     fun getGamesByName(@RequestBody gameName: String): ResponseEntity<String>{

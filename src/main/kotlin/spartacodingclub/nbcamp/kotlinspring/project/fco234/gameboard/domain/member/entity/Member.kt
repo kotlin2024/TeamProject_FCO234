@@ -18,11 +18,11 @@ class Member (
     val username: String,
 
     @Column(name = "password", nullable = false)
-    var password: String, // 비밀번호 변경이 가능함에 따라 val에서 var로 변경
+    var password: String,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    var role: MemberPosition, // 해당부분을 val 에서 var로 수정 (관리자가 권한을 부여해야하기때문에 var로 수정)
+    var role: MemberPosition,
 
     @Embedded
     var profile: MemberProfile,

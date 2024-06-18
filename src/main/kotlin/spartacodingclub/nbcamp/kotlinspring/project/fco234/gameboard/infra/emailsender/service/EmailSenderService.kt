@@ -23,7 +23,7 @@ class EmailSenderService @Autowired constructor (
 
         helper.setTo(to)
         helper.setSubject(subject)
-        helper.setText(text, true) // true로 설정하여 HTML 내용을 허용
+        helper.setText(text, true)
 
         mailSender.send(message)
     }

@@ -24,7 +24,7 @@ class JwtPlugin (
 
     fun validateToken(
         jwt: String
-    ): Result<Jws<Claims>> = // Result는 try catch 대신에 사용하는것, 코틀린에서 우아하게 exception을 처리할때 Result 객체를 반환함. 실제로 validateToken()을 사용하는 쪽에서 exception을 핸들링할수 있게끔 한다
+    ): Result<Jws<Claims>> =
 
         kotlin.runCatching {
             val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
@@ -48,7 +48,7 @@ class JwtPlugin (
             .add(mapOf(
                 "role" to role,
                 "birthday" to birthday,
-                "email" to email)) // claims 안에 역할,생일, 고유id 값이 들어있음
+                "email" to email))
             .build()
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))

@@ -15,7 +15,6 @@ class CommentController (
     private val commentService: CommentService
 ) {
 
-//    @PreAuthorize("hasRole('PLATFORM_USER')")
     @PostMapping
     fun createComment(
         @PathVariable channelId: Long,
@@ -39,7 +38,6 @@ class CommentController (
             .body(commentService.getCommentsWithinPost(channelId, postId))
 
 
-//    @PreAuthorize("hasRole('PLATFORM_USER')")
     @PutMapping("/{commentId}")
     fun updateComment(
         @PathVariable channelId: Long,
@@ -53,7 +51,6 @@ class CommentController (
             .body(commentService.updateComment(channelId, postId, commentId, request))
 
 
-//    @PreAuthorize("hasRole('PLATFORM_USER')")
     @DeleteMapping("/{commentId}")
     fun deleteComment(
         @PathVariable channelId: Long,
